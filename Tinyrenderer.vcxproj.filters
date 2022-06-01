@@ -14,8 +14,26 @@
   <ItemGroup>
     <ClCompile Include="source\engine.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\function\global\global_context.cpp">
+      <Filter>function\global</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\render\RenderSystem.cpp">
+      <Filter>function\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\render\WindowSystem.cpp">
+      <Filter>function\render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\engine.h" />
+    <ClInclude Include="source\function\global\global_context.h">
+      <Filter>function\global</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\WindowSystem.h">
+      <Filter>function\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\RenderSystem.h">
+      <Filter>function\render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
