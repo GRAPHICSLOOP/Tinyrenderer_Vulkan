@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Tinyrenderer.cpp">
+    <ClCompile Include="Tinyrenderer_Vulkan\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
