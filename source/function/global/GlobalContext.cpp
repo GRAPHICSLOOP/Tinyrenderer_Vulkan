@@ -8,6 +8,7 @@ void tiny::RuntimeGlobalContext::startSystems()
 	mLogSystem->initialize();
 
 	mWindowSystem = std::make_shared<WindowSystem>();
+	mWindowSystem->initialize();
 	
 	mRenderSystem = std::make_shared<RenderSystem>();
 }
