@@ -10,11 +10,20 @@
     <Filter Include="function\render">
       <UniqueIdentifier>{b48fdeb6-56ca-49e4-aa57-781309351416}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{a06962de-bcc2-45fb-b821-89f922b53f50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\log">
+      <UniqueIdentifier>{780849c6-676c-4591-b48f-50d3af78e1d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\base">
+      <UniqueIdentifier>{94997c8b-0046-45ae-abed-9bcb9780ffb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\engine.cpp" />
+    <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\function\global\global_context.cpp">
+    <ClCompile Include="source\function\global\GlobalContext.cpp">
       <Filter>function\global</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\RenderSystem.cpp">
@@ -23,10 +32,13 @@
     <ClCompile Include="source\function\render\WindowSystem.cpp">
       <Filter>function\render</Filter>
     </ClCompile>
+    <ClCompile Include="source\core\log\LogSystem.cpp">
+      <Filter>core\log</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\engine.h" />
-    <ClInclude Include="source\function\global\global_context.h">
+    <ClInclude Include="source\Engine.h" />
+    <ClInclude Include="source\function\global\GlobalContext.h">
       <Filter>function\global</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\WindowSystem.h">
@@ -34,6 +46,12 @@
     </ClInclude>
     <ClInclude Include="source\function\render\RenderSystem.h">
       <Filter>function\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\log\LogSystem.h">
+      <Filter>core\log</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\base\macro.h">
+      <Filter>core\base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

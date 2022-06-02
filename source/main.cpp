@@ -1,6 +1,23 @@
 ﻿
-int main() {
+#include "Engine.h"
+#include "core/base/macro.h"
+#define TINY_ROOT_DIR F:/Jacson/Documents/Learning/Tinyrenderer/config
+#define TINY_XSTR(s) #s
 
+
+int main() 
+{
+
+	tiny::EngineConfigParams params;
+	params.mConfigFilePath = std::filesystem::path(TINY_XSTR(TINY_ROOT_DIR)) / "tinyengine.ini";
+
+	tiny::TinyEngine* engine = new tiny::TinyEngine();
+	engine->startEngine(params);
+	engine->initialize();
+	engine->run();
+	engine->clear();
+	engine->shutdownEngine();
+	delete engine;
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单

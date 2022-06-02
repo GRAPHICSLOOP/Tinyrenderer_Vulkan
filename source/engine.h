@@ -1,11 +1,18 @@
 ﻿#pragma once
+#include <filesystem>
+#include "core/base/macro.h"
 
 namespace tiny 
 {
+	struct EngineConfigParams
+	{
+		std::filesystem::path mConfigFilePath;
+	};
+
 	class TinyEngine
 	{
 	public:
-		void startEngine();
+		void startEngine(const EngineConfigParams& params);
 		void shutdownEngine();
 		void run();
 
@@ -16,6 +23,8 @@ namespace tiny
 		void rendererTick(float delta_time);
 		
 		void calculateFPS(float delta_time);
+	protected: 
+		EngineConfigParams mInitParams;
 	};
 }
 
