@@ -44,6 +44,12 @@
     <ClCompile Include="source\function\render\vulkan\VulkanRHI.cpp">
       <Filter>function\render\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="source\function\render\Pass\CameraPass.cpp">
+      <Filter>function\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\render\RenderPipeline.cpp">
+      <Filter>function\render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine.h" />
@@ -67,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="source\function\render\vulkan\VulkanRHI.h">
       <Filter>function\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\Pass\CameraPass.h">
+      <Filter>function\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\RenderPipeline.h">
+      <Filter>function\render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

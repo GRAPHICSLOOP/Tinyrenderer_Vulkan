@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\function\render\RenderPipeline.cpp" />
+    <ClCompile Include="source\function\render\Pass\CameraPass.cpp" />
     <ClCompile Include="source\core\log\LogSystem.cpp" />
     <ClCompile Include="source\function\render\RenderSystem.cpp" />
     <ClCompile Include="source\function\global\GlobalContext.cpp" />
@@ -29,6 +31,8 @@
     <ClCompile Include="source\function\render\vulkan\VulkanUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\function\render\RenderPipeline.h" />
+    <ClInclude Include="source\function\render\Pass\CameraPass.h" />
     <ClInclude Include="source\core\base\macro.h" />
     <ClInclude Include="source\core\log\LogSystem.h" />
     <ClInclude Include="source\function\render\RenderSystem.h" />

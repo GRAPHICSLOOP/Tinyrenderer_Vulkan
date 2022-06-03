@@ -1,5 +1,6 @@
 ﻿#include "VulkanRHI.h"
 #include "VulkanUtil.h"
+#include "core/base/macro.h"
 
 tiny::VulkanRHI::~VulkanRHI()
 {
@@ -228,6 +229,8 @@ void tiny::VulkanRHI::findSwapchainSupport()
     mSwapchainSupportDetails.mExtent2D = chooseSwapchainExtentFromDetails(mSwapchainSupportDetails.mCapabilities);
 
     mSwapchainSupportDetails.mImageCount = mSwapchainSupportDetails.mCapabilities.minImageCount;
+
+    TINYLOG_INFO("swapchain numb : {}", mSwapchainSupportDetails.mImageCount);
 }
 
 vk::SurfaceFormatKHR tiny::VulkanRHI::chooseSwapchainSurfaceFormatFromDetails(std::vector<vk::SurfaceFormatKHR> format)
