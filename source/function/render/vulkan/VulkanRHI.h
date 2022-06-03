@@ -4,12 +4,6 @@
 #include <vulkan/vulkan.hpp>
 #include "function/render/WindowSystem.h"
 
-#define CHECK_NULL(i) \
-	if(!i)\
-	{ \
-		throw std::runtime_error(#i "is null!"); \
-	}
-
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
@@ -50,18 +44,19 @@ namespace tiny
 		void initialize(const VulkanConfigParams &params);
 
 	public:
+		vk::PhysicalDevice mPhyDevice;
+		vk::Device mDevice;
+		
+		SwapchainSupportDetails mSwapchainSupportDetails;
 
 	private:
 		std::array<const char*, 1> mEnableLayerNames = { "VK_LAYER_KHRONOS_validation" };
 		QueueFamilyIndices mQueueFamilyIndices;
 		std::shared_ptr<WindowSystem> mWindowSystem;
-		SwapchainSupportDetails mSwapchainSupportDetails;
 	
 	private:
 		vk::Instance mInstance;
 		VkSurfaceKHR mSurfaceKHR;
-		vk::PhysicalDevice mPhyDevice;
-		vk::Device mDevice;
 		vk::CommandPool mCommandPool;
 		vk::CommandBuffer mCommandBuffer;
 		vk::SwapchainKHR mSwapchain;

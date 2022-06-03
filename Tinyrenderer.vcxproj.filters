@@ -22,6 +22,9 @@
     <Filter Include="function\render\Vulkan">
       <UniqueIdentifier>{147c9f5d-f623-48a9-b568-adda4e0b7f3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="function\render\Pass">
+      <UniqueIdentifier>{694f4aea-81bf-44a7-abdf-f38fbb8f88b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp" />
@@ -44,11 +47,11 @@
     <ClCompile Include="source\function\render\vulkan\VulkanRHI.cpp">
       <Filter>function\render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="source\function\render\Pass\CameraPass.cpp">
-      <Filter>function\render</Filter>
-    </ClCompile>
     <ClCompile Include="source\function\render\RenderPipeline.cpp">
       <Filter>function\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\render\Pass\CameraPass.cpp">
+      <Filter>function\render\Pass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,11 +77,11 @@
     <ClInclude Include="source\function\render\vulkan\VulkanRHI.h">
       <Filter>function\render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="source\function\render\Pass\CameraPass.h">
-      <Filter>function\render</Filter>
-    </ClInclude>
     <ClInclude Include="source\function\render\RenderPipeline.h">
       <Filter>function\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\Pass\CameraPass.h">
+      <Filter>function\render\Pass</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include "function/render/vulkan/VulkanRHI.h"
+#include "function/render/RenderPipeline.h"
 
 namespace tiny
 {
@@ -9,8 +10,9 @@ namespace tiny
 	public:
 		void initialize();
 
-	public:
+	private:
 		std::shared_ptr<VulkanRHI> mVulkanRHI;
+		std::shared_ptr<RenderPipeline> mRenderPipeline;
 	};
 }
 
