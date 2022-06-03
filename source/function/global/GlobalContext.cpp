@@ -11,6 +11,7 @@ void tiny::RuntimeGlobalContext::startSystems()
 	mWindowSystem->initialize();
 	
 	mRenderSystem = std::make_shared<RenderSystem>();
+	mRenderSystem->initialize();
 }
 
 void tiny::RuntimeGlobalContext::shutdownSystems()

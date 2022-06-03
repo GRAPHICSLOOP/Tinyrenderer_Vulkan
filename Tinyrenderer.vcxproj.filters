@@ -19,6 +19,9 @@
     <Filter Include="core\base">
       <UniqueIdentifier>{94997c8b-0046-45ae-abed-9bcb9780ffb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="function\render\Vulkan">
+      <UniqueIdentifier>{147c9f5d-f623-48a9-b568-adda4e0b7f3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp" />
@@ -34,6 +37,12 @@
     </ClCompile>
     <ClCompile Include="source\core\log\LogSystem.cpp">
       <Filter>core\log</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\render\vulkan\VulkanUtil.cpp">
+      <Filter>function\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\render\vulkan\VulkanRHI.cpp">
+      <Filter>function\render\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="source\core\base\macro.h">
       <Filter>core\base</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\vulkan\VulkanUtil.h">
+      <Filter>function\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\vulkan\VulkanRHI.h">
+      <Filter>function\render\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

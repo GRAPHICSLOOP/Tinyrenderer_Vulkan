@@ -25,6 +25,8 @@
     <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\function\render\WindowSystem.cpp" />
+    <ClCompile Include="source\function\render\vulkan\VulkanRHI.cpp" />
+    <ClCompile Include="source\function\render\vulkan\VulkanUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\core\base\macro.h" />
@@ -33,6 +35,8 @@
     <ClInclude Include="source\function\global\GlobalContext.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\function\render\WindowSystem.h" />
+    <ClInclude Include="source\function\render\vulkan\VulkanRHI.h" />
+    <ClInclude Include="source\function\render\vulkan\VulkanUtil.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
