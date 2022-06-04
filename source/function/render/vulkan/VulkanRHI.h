@@ -42,27 +42,40 @@ namespace tiny
 	public:
 		~VulkanRHI();
 		void initialize(const VulkanConfigParams &params);
+		vk::CommandBuffer beginSingleTimeBuffer();
+		void endSingleTimeBuffer(vk::CommandBuffer commandBuffer);
+		void prepareBeforePass();
+		void submitRendering();
+		const uint32_t getNextImageIndex() const;
 
 	public:
 		vk::PhysicalDevice mPhyDevice;
 		vk::Device mDevice;
 		vk::DescriptorPool mDescriptorPool;
-		
-		SwapchainSupportDetails mSwapchainSupportDetails;
+		std::vector<vk::Image> mSwapchainImages;
+		std::vector<vk::ImageView> mSwapchainImageViews;
 
+		vk::CommandBuffer mCommandBuffer;
+
+		vk::Semaphore mImageAvailableSemaphore;
+		vk::Semaphore mRenderFinishedSemaphore;
+		vk::Fence mFence;
+
+		SwapchainSupportDetails mSwapchainSupportDetails;
 	private:
 		std::array<const char*, 1> mEnableLayerNames = { "VK_LAYER_KHRONOS_validation" };
 		QueueFamilyIndices mQueueFamilyIndices;
 		std::shared_ptr<WindowSystem> mWindowSystem;
+		uint32_t nextImageIndex;
 	
 	private:
 		vk::Instance mInstance;
 		VkSurfaceKHR mSurfaceKHR;
 		vk::CommandPool mCommandPool;
-		vk::CommandBuffer mCommandBuffer;
 		vk::SwapchainKHR mSwapchain;
-		std::vector<vk::Image> mSwapchainImages;
-		std::vector<vk::ImageView> mSwapchainImageViews;
+		vk::Queue mGraphicsQueue;
+		vk::Queue mPresentQueue;
+
 
 	private:
 		void createInstance();

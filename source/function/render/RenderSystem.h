@@ -11,11 +11,14 @@ namespace tiny
 	{
 	public:
 		void initialize();
+		void tick(float deltaTime);
+	public:
+		std::shared_ptr<VulkanRHI> mVulkanRHI;
 
 	private:
-		std::shared_ptr<VulkanRHI> mVulkanRHI;
 		std::shared_ptr<RenderResource> mRenderResource;
 		std::shared_ptr<RenderPipeline> mRenderPipeline;
+
 	};
 }
 

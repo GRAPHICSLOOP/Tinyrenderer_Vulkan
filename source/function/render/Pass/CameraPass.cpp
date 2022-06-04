@@ -1,14 +1,19 @@
 ﻿#include "CameraPass.h"
 #include "function/render/vulkan/VulkanUtil.h"
 #include "core/base/macro.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 tiny::MainCameraPass::~MainCameraPass()
 {
+    for (uint32_t i = 0; i < mFrame.mFramebuffer.size(); i++)
+    {
+        mVulkanRHI->mDevice.destroyFramebuffer(mFrame.mFramebuffer[i]);
+    }
     mVulkanRHI->mDevice.destroyPipelineLayout(mPipelineLayout);
     mVulkanRHI->mDevice.destroyPipeline(mPipeline);
-    mVulkanRHI->mDevice.destroyRenderPass(mRenderPass);
+    mVulkanRHI->mDevice.destroyRenderPass(mFrame.mRenderPass);
     mVulkanRHI->mDevice.destroyDescriptorSetLayout(mDescSetLayout);
-    std::vector<FrameBufferAttachment> attachments = mFrameBuffer.getAttachments();
+    std::vector<FrameBufferAttachment> attachments = mFrame.getAttachments();
     for (uint32_t i = 0; i < attachments.size(); i++)
     {
         mVulkanRHI->mDevice.destroyImage(attachments[i].mImage);
@@ -26,33 +31,43 @@ void tiny::MainCameraPass::initialize(PassConfigParams params)
     setupRenderPass();
     setupDescriptorSetLayout();
     setupPipelines();
-    //setupDescriptorSet();
+    setupDescriptorSet();
     //setupFramebufferDescriptorSet();
-    //setupSwapchainFramebuffers();
+    setupSwapchainFramebuffers();
 
+}
+
+void tiny::MainCameraPass::drawPass()
+{
+    TempUpdateUniformBuffer();
+
+    vk::RenderPassBeginInfo passBegineInfo;
+    passBegineInfo.renderPass = mFrame.mRenderPass;
+    passBegineInfo.framebuffer = mFrame.mFramebuffer[mVulkanRHI->getNextImageIndex()];
+    vk::Rect2D area;
+    area.offset = 0;
+    area.extent = mVulkanRHI->mSwapchainSupportDetails.mExtent2D;
+    passBegineInfo.setRenderArea(area);
+
+    std::array<vk::ClearValue, 2> clearValues;
+    clearValues[0].color = std::array<float, 4>{0, 0, 0, 1.f};
+    clearValues[1].depthStencil = 1.f;
+    passBegineInfo.pClearValues = clearValues.data();
+    passBegineInfo.clearValueCount = 2;
+
+    mVulkanRHI->mCommandBuffer.beginRenderPass(passBegineInfo, vk::SubpassContents::eInline);
+        mVulkanRHI->mCommandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, mPipeline);
+        vk::DeviceSize offset = 0;
+        mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &mRenderResource->mMeshBufferResource.mVertexBuffer, &offset);
+        mVulkanRHI->mCommandBuffer.bindIndexBuffer(mRenderResource->mMeshBufferResource.mIndexBuffer, offset, vk::IndexType::eUint32);
+        mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mPipelineLayout, 0, 1, &mDescriptorSets[0], 0, nullptr);
+        mVulkanRHI->mCommandBuffer.draw(mRenderResource->mMeshBufferResource.mVertices.size(), 1, 0, 0);
+        //mVulkanRHI->mCommandBuffer.drawIndexed((uint32_t)mRenderResource->mMeshBufferResource.mIndices.size(), 1, 0, 0, 0);
+    mVulkanRHI->mCommandBuffer.endRenderPass();
 }
 
 void tiny::MainCameraPass::setupAttachments()
 {
-    FrameBufferAttachment colorFrameBufferAttachment;
-    colorFrameBufferAttachment.mFormat = vk::Format::eR8G8B8A8Unorm;
-    VulkanUtil::createImage(
-        mVulkanRHI->mPhyDevice,
-        mVulkanRHI->mDevice,
-        mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width,
-        mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height,
-        colorFrameBufferAttachment.mFormat,
-        vk::ImageTiling::eOptimal,
-        vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eSampled,
-        vk::MemoryPropertyFlagBits::eDeviceLocal,
-        colorFrameBufferAttachment.mImage,
-        colorFrameBufferAttachment.mMemory);
-    colorFrameBufferAttachment.mImageView = VulkanUtil::createImageView(
-        mVulkanRHI->mDevice,
-        vk::ImageAspectFlagBits::eColor,
-        colorFrameBufferAttachment.mFormat,
-        colorFrameBufferAttachment.mImage);
-
     FrameBufferAttachment depthFrameBufferAttachment;
     depthFrameBufferAttachment.mFormat = vk::Format::eD24UnormS8Uint;
     VulkanUtil::createImage(
@@ -72,8 +87,15 @@ void tiny::MainCameraPass::setupAttachments()
         depthFrameBufferAttachment.mFormat,
         depthFrameBufferAttachment.mImage);
 
-    mFrameBuffer.mAttachments.insert(std::make_pair(EAttachmentType::color, colorFrameBufferAttachment));
-    mFrameBuffer.mAttachments.insert(std::make_pair(EAttachmentType::depth, depthFrameBufferAttachment));
+    mFrame.mAttachments.insert(std::make_pair(ATTACHMENT_TYPE::TYPE_DEPTH, depthFrameBufferAttachment));
+
+    VulkanUtil::transitionImageLayout(
+        mVulkanRHI.get(),
+        depthFrameBufferAttachment.mImage,
+        depthFrameBufferAttachment.mFormat,
+        vk::ImageLayout::eUndefined,
+        vk::ImageLayout::eDepthStencilAttachmentOptimal,
+        1);
 }
 
 void tiny::MainCameraPass::setupRenderPass()
@@ -81,7 +103,7 @@ void tiny::MainCameraPass::setupRenderPass()
     std::array<vk::AttachmentDescription, 2> attachmentDesces;
 
     vk::AttachmentDescription& colorAttachmentDesc = attachmentDesces[0];
-    colorAttachmentDesc.format = mFrameBuffer.mAttachments[EAttachmentType::color].mFormat;
+    colorAttachmentDesc.format = mVulkanRHI->mSwapchainSupportDetails.mFormat.format;
     colorAttachmentDesc.samples = vk::SampleCountFlagBits::e1;
     colorAttachmentDesc.loadOp = vk::AttachmentLoadOp::eClear;
     colorAttachmentDesc.storeOp = vk::AttachmentStoreOp::eStore;
@@ -91,7 +113,7 @@ void tiny::MainCameraPass::setupRenderPass()
     colorAttachmentDesc.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
 
     vk::AttachmentDescription& depthAttachmentDesc = attachmentDesces[1];
-    depthAttachmentDesc.format = mFrameBuffer.mAttachments[EAttachmentType::depth].mFormat;
+    depthAttachmentDesc.format = mFrame.mAttachments[ATTACHMENT_TYPE::TYPE_DEPTH].mFormat;
     depthAttachmentDesc.samples = vk::SampleCountFlagBits::e1;
     depthAttachmentDesc.loadOp = vk::AttachmentLoadOp::eClear;
     depthAttachmentDesc.storeOp = vk::AttachmentStoreOp::eDontCare;
@@ -125,8 +147,8 @@ void tiny::MainCameraPass::setupRenderPass()
     info.setDependencies(subpassDependency);
     info.setSubpasses(subpassDesc);
 
-    mRenderPass = mVulkanRHI->mDevice.createRenderPass(info);
-    CHECK_NULL(mRenderPass);
+    mFrame.mRenderPass = mVulkanRHI->mDevice.createRenderPass(info);
+    CHECK_NULL(mFrame.mRenderPass);
 }
 
 void tiny::MainCameraPass::setupDescriptorSetLayout()
@@ -260,7 +282,7 @@ void tiny::MainCameraPass::setupPipelines()
     info.pColorBlendState = &blendInfo;
     info.pDynamicState = nullptr;
     info.layout = mPipelineLayout;
-    info.renderPass = mRenderPass;
+    info.renderPass = mFrame.mRenderPass;
     mPipeline = mVulkanRHI->mDevice.createGraphicsPipeline(VK_NULL_HANDLE,info).value;
     CHECK_NULL(mPipeline);
 
@@ -277,13 +299,13 @@ void tiny::MainCameraPass::setupDescriptorSet()
     mDescriptorSets = mVulkanRHI->mDevice.allocateDescriptorSets(info);
 
     vk::DescriptorBufferInfo bufferInfo;
-    bufferInfo.buffer = mRenderResource->mMeshResource.mBuffer;
+    bufferInfo.buffer = mRenderResource->mTransfromResource.mBuffer;
     bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(tiny::MeshBufferObject);
+    bufferInfo.range = sizeof(tiny::TransfromUniform);
 
     vk::DescriptorImageInfo imageInfo;
-    imageInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
-    imageInfo.imageView = mRenderResource->mSampleResource.mImageView;
+    imageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    imageInfo.imageView = mRenderResource->mTextureResource.mImageView;
     imageInfo.sampler = mRenderResource->mSampleResource.mTextureSampler;
 
     // 更新描述符
@@ -302,4 +324,48 @@ void tiny::MainCameraPass::setupDescriptorSet()
     writeSet[1].pImageInfo = &imageInfo;
 
     mVulkanRHI->mDevice.updateDescriptorSets(writeSet, nullptr);
+}
+
+void tiny::MainCameraPass::setupSwapchainFramebuffers()
+{
+    mFrame.mFramebuffer.resize(mVulkanRHI->mSwapchainSupportDetails.mImageCount);
+
+    for (uint32_t i = 0; i < mVulkanRHI->mSwapchainSupportDetails.mImageCount; i++)
+    {
+        std::array<vk::ImageView, 2> attachments = { 
+            mVulkanRHI->mSwapchainImageViews[i],
+            mFrame.mAttachments[ATTACHMENT_TYPE::TYPE_DEPTH].mImageView
+        };
+
+        vk::FramebufferCreateInfo info;
+        info.renderPass = mFrame.mRenderPass;
+        info.pAttachments = attachments.data();
+        info.attachmentCount = (uint32_t)attachments.size();
+        info.height = mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height;
+        info.width = mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width;
+        info.layers = 1;
+
+        mFrame.mFramebuffer[i] = mVulkanRHI->mDevice.createFramebuffer(info);
+        CHECK_NULL(mFrame.mFramebuffer[i]);
+    }
+}
+
+void tiny::MainCameraPass::TempUpdateUniformBuffer()
+{
+    static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    TransfromUniform ubo;
+    ubo.mModel = glm::rotate(glm::mat4(1.f), time * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+    ubo.mView = glm::lookAt(glm::vec3(1.f), glm::vec3(0.f), glm::vec3(0.f, 0.f, 1.f));
+    ubo.mProj = glm::perspective(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
+    ubo.mProj[1][1] *= -1;
+
+    vk::DeviceSize deviceSize = sizeof(ubo);
+    void* data;
+    vkMapMemory(mVulkanRHI->mDevice,mRenderResource->mTransfromResource.mMemory, 0, deviceSize, 0, &data);
+    memcpy(data, &ubo, deviceSize);
+    vkUnmapMemory(mVulkanRHI->mDevice, mRenderResource->mTransfromResource.mMemory);
 }

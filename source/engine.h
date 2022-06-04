@@ -19,10 +19,10 @@ namespace tiny
 		void initialize();
 		void clear();
 	protected:
-		void logicalTick(float delta_time);
-		void rendererTick(float delta_time);
+		void logicalTick(float deltaTime);
+		void rendererTick(float deltaTime);
 		
-		void calculateFPS(float delta_time);
+		void calculateFPS(float deltaTime);
 	protected: 
 		EngineConfigParams mInitParams;
 	};

@@ -10,6 +10,9 @@ tiny::VulkanRHI::~VulkanRHI()
     }
     mDevice.destroySwapchainKHR(mSwapchain);
     mDevice.destroyDescriptorPool(mDescriptorPool);
+    mDevice.destroySemaphore(mImageAvailableSemaphore);
+    mDevice.destroySemaphore(mRenderFinishedSemaphore);
+    mDevice.destroyFence(mFence);
     mDevice.destroyCommandPool(mCommandPool);
     mDevice.destroy();
     mInstance.destroySurfaceKHR(mSurfaceKHR);
@@ -43,6 +46,89 @@ void tiny::VulkanRHI::initialize(const VulkanConfigParams& params)
     createSwapchainImageViews();
 
     createFramebufferImageAndView();
+}
+
+vk::CommandBuffer tiny::VulkanRHI::beginSingleTimeBuffer()
+{
+    vk::CommandBufferAllocateInfo allocInfo;
+    allocInfo.commandBufferCount = 1;
+    allocInfo.commandPool = mCommandPool;
+    allocInfo.level = vk::CommandBufferLevel::ePrimary;
+    vk::CommandBuffer buffer = mDevice.allocateCommandBuffers(allocInfo)[0];
+
+    vk::CommandBufferBeginInfo beginInfo;
+    beginInfo.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    buffer.begin(beginInfo);
+    return buffer;
+}
+
+void tiny::VulkanRHI::endSingleTimeBuffer(vk::CommandBuffer commandBuffer)
+{
+    commandBuffer.end();
+
+    vk::SubmitInfo submitInfo;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vk::Result result = mGraphicsQueue.submit(1, &submitInfo, VK_NULL_HANDLE);
+    mGraphicsQueue.waitIdle();
+
+    mDevice.freeCommandBuffers(mCommandPool, commandBuffer);
+}
+
+void tiny::VulkanRHI::prepareBeforePass()
+{
+    mDevice.resetCommandPool(mCommandPool);
+
+    // 获取imageindex
+    vk::Result result = mDevice.acquireNextImageKHR(
+        mSwapchain,
+        UINT64_MAX,
+        mImageAvailableSemaphore,
+        VK_NULL_HANDLE,
+        &nextImageIndex);
+
+    // 记录命令
+    vk::CommandBufferBeginInfo info;
+    info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit; // default 0
+    info.pInheritanceInfo = nullptr;
+    mCommandBuffer.begin(info);
+}
+
+void tiny::VulkanRHI::submitRendering()
+{
+    mCommandBuffer.end();
+
+    // 提交命令buffer
+    vk::SubmitInfo submitInfo;
+    std::array<vk::PipelineStageFlags, 1> waiteStages = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = &mImageAvailableSemaphore;
+    submitInfo.pWaitDstStageMask = waiteStages.data();
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &mCommandBuffer;
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = &mRenderFinishedSemaphore;
+
+    if (mGraphicsQueue.submit(1, &submitInfo, mFence) != vk::Result::eSuccess)
+    {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    vk::PresentInfoKHR presentInfo;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = &mRenderFinishedSemaphore;
+
+    presentInfo.pSwapchains = &mSwapchain;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pImageIndices = &nextImageIndex;
+
+    vk::Result result = mPresentQueue.presentKHR(presentInfo);
+}
+
+const uint32_t tiny::VulkanRHI::getNextImageIndex() const
+{
+    return nextImageIndex;
 }
 
 void tiny::VulkanRHI::createInstance()
@@ -116,6 +202,9 @@ void tiny::VulkanRHI::createLogicalDevice()
 
     mDevice = mPhyDevice.createDevice(info);
     CHECK_NULL(mDevice);
+
+    mGraphicsQueue = mDevice.getQueue(mQueueFamilyIndices.graphicsIndices.value(), 0);
+    mPresentQueue = mDevice.getQueue(mQueueFamilyIndices.presentIndices.value(), 0);
 }
 
 void tiny::VulkanRHI::createCommandPool()
@@ -158,6 +247,16 @@ void tiny::VulkanRHI::createDescriptorPool()
 
 void tiny::VulkanRHI::createSyncPrimitives()
 {
+    vk::SemaphoreCreateInfo semaphoreInfo;
+    vk::FenceCreateInfo fenceInfo;
+    fenceInfo.setFlags(vk::FenceCreateFlagBits::eSignaled);
+
+    mImageAvailableSemaphore = mDevice.createSemaphore(semaphoreInfo);
+    CHECK_NULL(mImageAvailableSemaphore);
+    mRenderFinishedSemaphore = mDevice.createSemaphore(semaphoreInfo);
+    CHECK_NULL(mRenderFinishedSemaphore);
+    mFence = mDevice.createFence(fenceInfo);
+    CHECK_NULL(mFence);
 }
 
 void tiny::VulkanRHI::createSwapchain()

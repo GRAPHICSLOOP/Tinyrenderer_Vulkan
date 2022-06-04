@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include <vulkan/vulkan.hpp>
+#include "function/render/vulkan/VulkanRHI.h"
+#include "function/render/RenderResource.h"
 
 namespace tiny
 {
@@ -45,6 +46,34 @@ namespace tiny
             vk::MemoryPropertyFlags properties,
             vk::Buffer& buffer,
             vk::DeviceMemory& bufferMemory);
+
+        static void transitionImageLayout(
+            VulkanRHI* vulkanRHI,
+            vk::Image& image,
+            vk::Format format,
+            vk::ImageLayout oldLayout,
+            vk::ImageLayout newLayout,
+            uint32_t mipLevel);
+
+        static void copyBuffer(
+            VulkanRHI* vulkanRHI,
+            vk::Buffer srcBuffer,
+            vk::Buffer dstBuffer,
+            vk::DeviceSize size);
+
+        static tiny::Textrure2D createTexture2D(
+            VulkanRHI* vulkanRHI,
+            uint32_t width,
+            uint32_t height,
+            void* pixels,
+            PIXEL_FORMAT pixelFormat,
+            uint32_t miplevels);
+
+        static void copyBufferToImage(VulkanRHI* vulkanRHI, vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height);
+
+        static void generateMipmaps(VulkanRHI* vulkanRHI, vk::Image image, uint32_t width, uint32_t hegith, uint32_t miplevels);
+
+        static tiny::Textrure2D loadTexture2DFormFile(VulkanRHI* vulkanRHI, const char* filePath);
 	};
 }
 

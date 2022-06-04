@@ -15,9 +15,10 @@ namespace tiny
 	{
 	public:
 		void initialize(const RenderPipelineConfigParams params);
-
+		void draw(float deltaTime);
 	private:
 		std::shared_ptr<MainCameraPass> mCameraPass;
+		std::shared_ptr<VulkanRHI> mVulkanRHI;
 	};
 }
 

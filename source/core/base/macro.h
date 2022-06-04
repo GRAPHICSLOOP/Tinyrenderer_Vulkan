@@ -6,10 +6,10 @@
 	tiny::gRuntimeGlobalContext.mLogSystem->log(LOG_LEVEL,"[" + std::string(__FUNCTION__) + "]" + __VA_ARGS__);
 
 
-#define TINYLOG_DEBUG(...) LOG_HELPER(tiny::ELogLevel::debug,__VA_ARGS__);
-#define TINYLOG_ERROR(...) LOG_HELPER(tiny::ELogLevel::error,__VA_ARGS__);
-#define TINYLOG_INFO(...) LOG_HELPER(tiny::ELogLevel::info,__VA_ARGS__);
-#define TINYLOG_WARN(...) LOG_HELPER(tiny::ELogLevel::warn,__VA_ARGS__);
+#define TINYLOG_DEBUG(...) LOG_HELPER(tiny::LOG_LEVEL::LEVEL_DEBUG,__VA_ARGS__);
+#define TINYLOG_ERROR(...) LOG_HELPER(tiny::LOG_LEVEL::LEVLE_ERROR,__VA_ARGS__);
+#define TINYLOG_INFO(...) LOG_HELPER(tiny::LOG_LEVEL::LEVEL_INFO,__VA_ARGS__);
+#define TINYLOG_WARN(...) LOG_HELPER(tiny::LOG_LEVEL::LEVEL_WARN,__VA_ARGS__);
 
 #define CHECK_NULL(i) \
 	if(!i)\

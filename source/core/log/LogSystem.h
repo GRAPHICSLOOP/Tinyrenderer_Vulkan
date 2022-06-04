@@ -5,12 +5,12 @@
 
 namespace tiny
 {
-    enum class ELogLevel : uint8_t
+    enum class LOG_LEVEL : uint8_t
     {
-        debug,
-        info,
-        warn,
-        error
+        LEVEL_DEBUG,
+        LEVEL_INFO,
+        LEVEL_WARN,
+        LEVEL_ERROR
     };
 
 	class LogSystem
@@ -22,20 +22,20 @@ namespace tiny
 		void initialize();
 
         template<typename... TARGS>
-        void log(ELogLevel level, TARGS&&... args)
+        void log(LOG_LEVEL level, TARGS&&... args)
         {
             switch (level)
             {
-            case ELogLevel::debug:
+            case LOG_LEVEL::LEVEL_DEBUG:
                 mLogger->debug(std::forward<TARGS>(args)...);
                 break;
-            case ELogLevel::info:
+            case LOG_LEVEL::LEVEL_INFO:
                 mLogger->info(std::forward<TARGS>(args)...);
                 break;
-            case ELogLevel::warn:
+            case LOG_LEVEL::LEVEL_WARN:
                 mLogger->warn(std::forward<TARGS>(args)...);
                 break;
-            case ELogLevel::error:
+            case LOG_LEVEL::LEVEL_ERROR:
                 mLogger->error(std::forward<TARGS>(args)...);
                 break;
             default:

@@ -6,48 +6,10 @@
 
 namespace tiny
 {
-	struct Vertex
+
+	enum class ATTACHMENT_TYPE : uint8_t
 	{
-		glm::vec3 position;
-		glm::vec3 color;
-		glm::vec2 texCoord;
-
-		static std::array<vk::VertexInputBindingDescription, 1> getBindingDescription()
-		{
-			std::array<vk::VertexInputBindingDescription,1> des;
-			des[0].binding = 0;
-			des[0].stride = sizeof(Vertex);
-			des[0].inputRate = vk::VertexInputRate::eVertex;
-
-			return des;
-		}
-
-		static std::array<vk::VertexInputAttributeDescription, 3> getAttributeDescription()
-		{
-			std::array<vk::VertexInputAttributeDescription, 3> des;
-			des[0].binding = 0;
-			des[0].location = 0;
-			des[0].format = vk::Format::eR32G32B32Sfloat;
-			des[0].offset = offsetof(Vertex, position);
-
-			des[1].binding = 0;
-			des[1].location = 1;
-			des[1].format = vk::Format::eR32G32B32Sfloat;
-			des[1].offset = offsetof(Vertex, color);
-
-			des[2].binding = 0;
-			des[2].location = 2;
-			des[2].format = vk::Format::eR32G32Sfloat;
-			des[2].offset = offsetof(Vertex, texCoord);
-
-			return des;
-		}
-	};
-
-	enum class EAttachmentType : uint8_t
-	{
-		color,
-		depth
+		TYPE_DEPTH
 	};
 
 	struct FrameBufferAttachment
@@ -59,11 +21,12 @@ namespace tiny
 		vk::Format mFormat;
 	};
 
-	struct Framebuffer
+	struct Frame
 	{
 	public:
+		std::vector<vk::Framebuffer> mFramebuffer;
 		vk::RenderPass mRenderPass;
-		std::unordered_map<EAttachmentType,FrameBufferAttachment> mAttachments;
+		std::unordered_map<ATTACHMENT_TYPE,FrameBufferAttachment> mAttachments;
 	public:
 		std::vector<FrameBufferAttachment> getAttachments()
 		{
@@ -91,22 +54,25 @@ namespace tiny
 	public:
 		~MainCameraPass();
 		void initialize(PassConfigParams params);
+		void drawPass();
 
 	private:
-		Framebuffer mFrameBuffer;
 		std::shared_ptr<VulkanRHI> mVulkanRHI;
 		std::shared_ptr<RenderResource> mRenderResource;
-		vk::RenderPass mRenderPass;
 		vk::DescriptorSetLayout mDescSetLayout;
 		vk::PipelineLayout mPipelineLayout;
 		vk::Pipeline mPipeline;
 		std::vector<vk::DescriptorSet> mDescriptorSets;
+		Frame mFrame;
+
 	private:
 		void setupAttachments();
 		void setupRenderPass();
 		void setupDescriptorSetLayout();
 		void setupPipelines();
 		void setupDescriptorSet();
+		void setupSwapchainFramebuffers();
+		void TempUpdateUniformBuffer();
 	};
 }
 

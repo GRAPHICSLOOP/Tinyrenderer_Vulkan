@@ -23,6 +23,8 @@ void tiny::TinyEngine::run()
 		logicalTick(0.01f);
 		rendererTick(0.01f);
 	}
+
+	gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice.waitIdle();
 }
 
 
@@ -34,14 +36,15 @@ void tiny::TinyEngine::clear()
 {
 }
 
-void tiny::TinyEngine::logicalTick(float delta_time)
+void tiny::TinyEngine::logicalTick(float deltaTime)
 {
 }
 
-void tiny::TinyEngine::rendererTick(float delta_time)
+void tiny::TinyEngine::rendererTick(float deltaTime)
 {
+	gRuntimeGlobalContext.mRenderSystem->tick(deltaTime);
 }
 
-void tiny::TinyEngine::calculateFPS(float delta_time)
+void tiny::TinyEngine::calculateFPS(float deltaTime)
 {
 }
