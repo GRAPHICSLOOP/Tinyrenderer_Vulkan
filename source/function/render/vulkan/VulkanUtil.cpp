@@ -1,4 +1,5 @@
-﻿#include "VulkanUtil.h"
+﻿#include<fstream>
+#include "VulkanUtil.h"
 #include "core/base/macro.h"
 
 uint32_t tiny::VulkanUtil::findMemoryType(vk::PhysicalDevice phyDevice, uint32_t typeFilter, vk::MemoryPropertyFlags property)
@@ -83,4 +84,68 @@ vk::ImageView tiny::VulkanUtil::createImageView(
     CHECK_NULL(imageView);
 
     return imageView;
+}
+
+std::vector<char> tiny::VulkanUtil::readFile(const char* fileName)
+{
+    std::ifstream file(fileName, std::ios::ate | std::ios::binary); // 末尾且二进制读取
+
+    if (!file.is_open())
+    {
+        throw std::runtime_error("open file error");
+    }
+
+    size_t size = file.tellg();
+    std::vector<char> buffer(size);
+    file.seekg(0); // 回到头部
+    file.read(buffer.data(), size);
+
+    file.close();
+    return buffer;
+}
+
+vk::ShaderModule tiny::VulkanUtil::createShaderModule(vk::Device device, const std::vector<char>& code)
+{
+    vk::ShaderModuleCreateInfo shaderInfo;
+    shaderInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+    shaderInfo.codeSize = code.size();
+
+    vk::ShaderModule shaderModule = device.createShaderModule(shaderInfo);
+    CHECK_NULL(shaderModule);
+    return shaderModule;
+}
+
+vk::ShaderModule tiny::VulkanUtil::loadShaderModuleFromFile(vk::Device device, const char* fileName)
+{
+    std::vector<char> code = readFile(fileName);
+    return createShaderModule(device, code);
+}
+
+void tiny::VulkanUtil::createBuffer(
+    vk::PhysicalDevice phyDevice,
+    vk::Device device,
+    vk::DeviceSize size,
+    vk::BufferUsageFlags usage,
+    vk::MemoryPropertyFlags properties,
+    vk::Buffer& buffer,
+    vk::DeviceMemory& bufferMemory)
+{
+    vk::BufferCreateInfo bufferInfo;
+    bufferInfo.sharingMode = vk::SharingMode::eExclusive;
+    bufferInfo.size = size;
+    bufferInfo.usage = usage;
+    buffer = device.createBuffer(bufferInfo);
+    CHECK_NULL(buffer);
+
+    vk::MemoryRequirements memRequirements;
+    memRequirements = device.getBufferMemoryRequirements(buffer);
+
+    vk::MemoryAllocateInfo allocInfo;
+    allocInfo.setAllocationSize(memRequirements.size);
+    allocInfo.setMemoryTypeIndex(findMemoryType(phyDevice, memRequirements.memoryTypeBits, properties));
+    bufferMemory = device.allocateMemory(allocInfo);
+    CHECK_NULL(bufferMemory);
+
+    // 绑定buffer和内存
+    device.bindBufferMemory(buffer, bufferMemory, 0);
 }

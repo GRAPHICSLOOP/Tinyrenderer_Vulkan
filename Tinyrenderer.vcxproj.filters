@@ -53,6 +53,7 @@
     <ClCompile Include="source\function\render\Pass\CameraPass.cpp">
       <Filter>function\render\Pass</Filter>
     </ClCompile>
+    <ClCompile Include="source\function\render\RenderResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine.h" />
@@ -83,5 +84,6 @@
     <ClInclude Include="source\function\render\Pass\CameraPass.h">
       <Filter>function\render\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="source\function\render\RenderResource.h" />
   </ItemGroup>
 </Project>

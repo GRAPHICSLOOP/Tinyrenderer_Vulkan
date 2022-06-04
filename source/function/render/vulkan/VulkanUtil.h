@@ -31,7 +31,20 @@ namespace tiny
             vk::Format fomat,
             vk::Image image);
 
+        static std::vector<char> readFile(const char* fileName);
 
+        static vk::ShaderModule createShaderModule(vk::Device device, const std::vector<char>& code);
+
+        static vk::ShaderModule loadShaderModuleFromFile(vk::Device device, const char* fileName);
+
+        static void createBuffer(
+            vk::PhysicalDevice phyDevice,
+            vk::Device device,
+            vk::DeviceSize size,
+            vk::BufferUsageFlags usage,
+            vk::MemoryPropertyFlags properties,
+            vk::Buffer& buffer,
+            vk::DeviceMemory& bufferMemory);
 	};
 }
 

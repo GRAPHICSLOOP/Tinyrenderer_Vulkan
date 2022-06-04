@@ -9,6 +9,7 @@ tiny::VulkanRHI::~VulkanRHI()
         mDevice.destroyImageView(mSwapchainImageViews[i]);
     }
     mDevice.destroySwapchainKHR(mSwapchain);
+    mDevice.destroyDescriptorPool(mDescriptorPool);
     mDevice.destroyCommandPool(mCommandPool);
     mDevice.destroy();
     mInstance.destroySurfaceKHR(mSurfaceKHR);
@@ -58,11 +59,11 @@ void tiny::VulkanRHI::createInstance()
 
     vk::InstanceCreateInfo info;
     info.ppEnabledExtensionNames = extensions.data();
-    info.enabledExtensionCount = extensions.size();
+    info.enabledExtensionCount = (uint32_t)extensions.size();
     if (enableValidationLayers)
     {
         info.ppEnabledLayerNames = mEnableLayerNames.data();
-        info.enabledLayerCount = mEnableLayerNames.size();
+        info.enabledLayerCount = (uint32_t)mEnableLayerNames.size();
     }
 
     mInstance = vk::createInstance(info);
@@ -111,7 +112,7 @@ void tiny::VulkanRHI::createLogicalDevice()
     info.pQueueCreateInfos = queueInfos.data();
     info.queueCreateInfoCount = (uint32_t)queueInfos.size();
     info.ppEnabledExtensionNames = extensionNames.data();
-    info.enabledExtensionCount = extensionNames.size();
+    info.enabledExtensionCount = (uint32_t)extensionNames.size();
 
     mDevice = mPhyDevice.createDevice(info);
     CHECK_NULL(mDevice);
@@ -139,6 +140,20 @@ void tiny::VulkanRHI::createCommandBuffers()
 
 void tiny::VulkanRHI::createDescriptorPool()
 {
+    std::array<vk::DescriptorPoolSize, 2> poolSize;
+    poolSize[0].descriptorCount = 1;
+    poolSize[0].type = vk::DescriptorType::eUniformBuffer;
+    poolSize[1].descriptorCount = 1;
+    poolSize[1].type = vk::DescriptorType::eCombinedImageSampler;
+
+    vk::DescriptorPoolCreateInfo info;
+    info.poolSizeCount = 2;
+    info.pPoolSizes = poolSize.data();
+    info.maxSets = 1;
+    info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+
+    mDescriptorPool = mDevice.createDescriptorPool(info);
+    CHECK_NULL(mDescriptorPool);
 }
 
 void tiny::VulkanRHI::createSyncPrimitives()

@@ -46,6 +46,7 @@ namespace tiny
 	public:
 		vk::PhysicalDevice mPhyDevice;
 		vk::Device mDevice;
+		vk::DescriptorPool mDescriptorPool;
 		
 		SwapchainSupportDetails mSwapchainSupportDetails;
 

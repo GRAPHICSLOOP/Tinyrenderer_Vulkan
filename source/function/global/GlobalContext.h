@@ -5,6 +5,7 @@
 #include "function/render/WindowSystem.h"
 #include "core/log/LogSystem.h"
 
+
 namespace tiny
 {
 	// 管理生命周期，并且创建/销毁所有的全局系统
