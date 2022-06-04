@@ -77,43 +77,44 @@ void tiny::MainCameraPass::setupRenderPass()
     std::array<vk::AttachmentDescription, 2> attachmentDesces;
 
     vk::AttachmentDescription& colorAttachmentDesc = attachmentDesces[0];
-    colorAttachmentDesc.setFormat(mFrameBuffer.mAttachments[EAttachmentType::color].mFormat);
-    colorAttachmentDesc.setSamples(vk::SampleCountFlagBits::e1);
-    colorAttachmentDesc.setLoadOp(vk::AttachmentLoadOp::eClear);
-    colorAttachmentDesc.setStoreOp(vk::AttachmentStoreOp::eStore);
-    colorAttachmentDesc.setInitialLayout(vk::ImageLayout::eUndefined);
-    colorAttachmentDesc.setFinalLayout(vk::ImageLayout::ePresentSrcKHR);
-    colorAttachmentDesc.setStencilLoadOp(vk::AttachmentLoadOp::eDontCare);
-    colorAttachmentDesc.setStencilStoreOp(vk::AttachmentStoreOp::eDontCare);
+    colorAttachmentDesc.format = mFrameBuffer.mAttachments[EAttachmentType::color].mFormat;
+    colorAttachmentDesc.samples = vk::SampleCountFlagBits::e1;
+    colorAttachmentDesc.loadOp = vk::AttachmentLoadOp::eClear;
+    colorAttachmentDesc.storeOp = vk::AttachmentStoreOp::eStore;
+    colorAttachmentDesc.initialLayout = vk::ImageLayout::eUndefined;
+    colorAttachmentDesc.finalLayout = vk::ImageLayout::ePresentSrcKHR;
+    colorAttachmentDesc.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    colorAttachmentDesc.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
 
     vk::AttachmentDescription& depthAttachmentDesc = attachmentDesces[1];
-    depthAttachmentDesc.setFormat(mFrameBuffer.mAttachments[EAttachmentType::depth].mFormat);
-    depthAttachmentDesc.setSamples(vk::SampleCountFlagBits::e1);
-    depthAttachmentDesc.setLoadOp(vk::AttachmentLoadOp::eClear);
-    depthAttachmentDesc.setStoreOp(vk::AttachmentStoreOp::eDontCare);
-    depthAttachmentDesc.setInitialLayout(vk::ImageLayout::eUndefined);
-    depthAttachmentDesc.setFinalLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
-    depthAttachmentDesc.setStencilLoadOp(vk::AttachmentLoadOp::eDontCare);
-    depthAttachmentDesc.setStencilStoreOp(vk::AttachmentStoreOp::eDontCare);
+    depthAttachmentDesc.format = mFrameBuffer.mAttachments[EAttachmentType::depth].mFormat;
+    depthAttachmentDesc.samples = vk::SampleCountFlagBits::e1;
+    depthAttachmentDesc.loadOp = vk::AttachmentLoadOp::eClear;
+    depthAttachmentDesc.storeOp = vk::AttachmentStoreOp::eDontCare;
+    depthAttachmentDesc.initialLayout = vk::ImageLayout::eUndefined;
+    depthAttachmentDesc.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+    depthAttachmentDesc.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    depthAttachmentDesc.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
 
     vk::AttachmentReference attachmentRef[2];
-    attachmentRef[0].setAttachment(0);
-    attachmentRef[0].setLayout(vk::ImageLayout::eColorAttachmentOptimal); // 过程中的布局,这也是为什么subpass可以多个
-    attachmentRef[1].setAttachment(1);
-    attachmentRef[1].setLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
+    attachmentRef[0].attachment = 0;
+    attachmentRef[0].layout = vk::ImageLayout::eColorAttachmentOptimal; // 过程中的布局,这也是为什么subpass可以多个
+    attachmentRef[1].attachment = 1;
+    attachmentRef[1].layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
     vk::SubpassDescription subpassDesc;
-    subpassDesc.setColorAttachments(attachmentRef[0]);
-    subpassDesc.setPDepthStencilAttachment(&attachmentRef[1]);
-    subpassDesc.setPipelineBindPoint(vk::PipelineBindPoint::eGraphics);
+    subpassDesc.colorAttachmentCount = 1;
+    subpassDesc.pColorAttachments = &attachmentRef[0];
+    subpassDesc.pDepthStencilAttachment = &attachmentRef[1];
+    subpassDesc.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
 
     vk::SubpassDependency subpassDependency;
-    subpassDependency.setSrcSubpass(VK_SUBPASS_EXTERNAL); // 因为我们不依赖任何subpass
-    subpassDependency.setDstSubpass(0);
-    subpassDependency.setSrcStageMask(vk::PipelineStageFlagBits::eTopOfPipe);
-    subpassDependency.setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
-    subpassDependency.setSrcAccessMask(vk::AccessFlagBits::eNone);
-    subpassDependency.setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite);
+    subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL; // 因为我们不依赖任何subpass
+    subpassDependency.dstSubpass = 0;
+    subpassDependency.srcStageMask = vk::PipelineStageFlagBits::eTopOfPipe;
+    subpassDependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    subpassDependency.srcAccessMask = vk::AccessFlagBits::eNone;
+    subpassDependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
 
     vk::RenderPassCreateInfo info;
     info.setAttachments(attachmentDesces);

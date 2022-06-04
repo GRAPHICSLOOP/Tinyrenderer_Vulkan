@@ -32,16 +32,16 @@ void tiny::VulkanUtil::createImage(
     vk::SampleCountFlagBits numSamples)
 {
     vk::ImageCreateInfo imageInfo;
-    imageInfo.setArrayLayers(1);
-    imageInfo.setMipLevels(mipLevel);
-    imageInfo.setSamples(numSamples);
-    imageInfo.setExtent(vk::Extent3D(imageWidth, imageHeight, 1));
-    imageInfo.setImageType(vk::ImageType::e2D);
-    imageInfo.setFormat(format);
-    imageInfo.setTiling(tilling);
-    imageInfo.setInitialLayout(vk::ImageLayout::eUndefined);
-    imageInfo.setUsage(usage);
-    imageInfo.setSharingMode(vk::SharingMode::eExclusive);
+    imageInfo.arrayLayers = 1;
+    imageInfo.mipLevels = mipLevel;
+    imageInfo.samples = numSamples;
+    imageInfo.extent = vk::Extent3D(imageWidth, imageHeight, 1);
+    imageInfo.imageType = vk::ImageType::e2D;
+    imageInfo.format = format;
+    imageInfo.tiling = tilling;
+    imageInfo.initialLayout = vk::ImageLayout::eUndefined;
+    imageInfo.usage = usage;
+    imageInfo.sharingMode = vk::SharingMode::eExclusive;
 
     image = device.createImage(imageInfo);
     CHECK_NULL(image);
@@ -66,18 +66,18 @@ vk::ImageView tiny::VulkanUtil::createImageView(
     vk::Image image)
 {
     vk::ImageSubresourceRange range;
-    range.setAspectMask(aspectMask);
-    range.setBaseArrayLayer(0);
-    range.setBaseMipLevel(0);
-    range.setLayerCount(1);
-    range.setLevelCount(1);
+    range.aspectMask = aspectMask;
+    range.baseArrayLayer = 0;
+    range.baseMipLevel = 0;
+    range.layerCount = 1;
+    range.levelCount = 1;
 
     vk::ImageViewCreateInfo info;
-    info.setComponents(vk::ComponentMapping());
-    info.setFormat(fomat);
-    info.setImage(image);
-    info.setViewType(vk::ImageViewType::e2D);
-    info.setSubresourceRange(range);
+    info.components = vk::ComponentMapping();
+    info.format = fomat;
+    info.image = image;
+    info.viewType = vk::ImageViewType::e2D;
+    info.subresourceRange = range;
 
     vk::ImageView imageView = device.createImageView(info);
     CHECK_NULL(imageView);
