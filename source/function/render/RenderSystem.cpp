@@ -32,3 +32,4 @@ void tiny::RenderSystem::tick(float deltaTime)
 
 	mVulkanRHI->submitRendering();
 }
+

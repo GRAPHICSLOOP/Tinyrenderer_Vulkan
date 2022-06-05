@@ -39,7 +39,7 @@ void tiny::MainCameraPass::initialize(PassConfigParams params)
 
 void tiny::MainCameraPass::drawPass()
 {
-    TempUpdateUniformBuffer();
+    TempUpdateUniformBuffer(0.01f);
 
     vk::RenderPassBeginInfo passBegineInfo;
     passBegineInfo.renderPass = mFrame.mRenderPass;
@@ -58,10 +58,13 @@ void tiny::MainCameraPass::drawPass()
     mVulkanRHI->mCommandBuffer.beginRenderPass(passBegineInfo, vk::SubpassContents::eInline);
         mVulkanRHI->mCommandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, mPipeline);
         vk::DeviceSize offset = 0;
-        mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &mRenderResource->mMeshBufferResource.mVertexBuffer, &offset);
-        mVulkanRHI->mCommandBuffer.bindIndexBuffer(mRenderResource->mMeshBufferResource.mIndexBuffer, offset, vk::IndexType::eUint32);
         mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mPipelineLayout, 0, 1, &mDescriptorSets[0], 0, nullptr);
-        mVulkanRHI->mCommandBuffer.draw(mRenderResource->mMeshBufferResource.mVertices.size(), 1, 0, 0);
+        for (const auto& resource : mRenderResource->mMeshBufferResources)
+        {
+            mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mVertexBuffer, &offset);
+            mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mIndexBuffer, offset, vk::IndexType::eUint32);
+            mVulkanRHI->mCommandBuffer.draw(resource.mVertexCount, 1, 0, 0);
+        }
         //mVulkanRHI->mCommandBuffer.drawIndexed((uint32_t)mRenderResource->mMeshBufferResource.mIndices.size(), 1, 0, 0, 0);
     mVulkanRHI->mCommandBuffer.endRenderPass();
 }
@@ -290,7 +293,7 @@ void tiny::MainCameraPass::setupPipelines()
     mVulkanRHI->mDevice.destroyShaderModule(fragShaderModule);
 }
 
-void tiny::MainCameraPass::setupDescriptorSet()
+void tiny::MainCameraPass::setupDescriptorSet()                     
 {
     vk::DescriptorSetAllocateInfo info;
     info.descriptorPool = mVulkanRHI->mDescriptorPool;
@@ -350,15 +353,10 @@ void tiny::MainCameraPass::setupSwapchainFramebuffers()
     }
 }
 
-void tiny::MainCameraPass::TempUpdateUniformBuffer()
+void tiny::MainCameraPass::TempUpdateUniformBuffer(float deltaTime)
 {
-    static auto startTime = std::chrono::high_resolution_clock::now();
-
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
     TransfromUniform ubo;
-    ubo.mModel = glm::rotate(glm::mat4(1.f), time * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+    ubo.mModel = glm::rotate(glm::mat4(1.f), deltaTime * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
     ubo.mView = glm::lookAt(glm::vec3(1.f), glm::vec3(0.f), glm::vec3(0.f, 0.f, 1.f));
     ubo.mProj = glm::perspective(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
     ubo.mProj[1][1] *= -1;

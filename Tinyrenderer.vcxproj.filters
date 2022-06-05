@@ -25,6 +25,21 @@
     <Filter Include="function\render\Pass">
       <UniqueIdentifier>{694f4aea-81bf-44a7-abdf-f38fbb8f88b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="function\framework">
+      <UniqueIdentifier>{1ac91ade-9e83-46ee-b083-626cc3ef9371}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="function\framework\component">
+      <UniqueIdentifier>{1fee749d-97cb-418f-ae3d-45eac2872953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="function\framework\object">
+      <UniqueIdentifier>{6ac6bb13-3f96-4948-af5f-86e401142294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="function\framework\asset">
+      <UniqueIdentifier>{108fe1e1-7fed-444e-82b6-ce870e195655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="function\framework\level">
+      <UniqueIdentifier>{94c67782-1c4c-4f72-b06f-0fe1d89becc2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp" />
@@ -53,7 +68,30 @@
     <ClCompile Include="source\function\render\Pass\CameraPass.cpp">
       <Filter>function\render\Pass</Filter>
     </ClCompile>
-    <ClCompile Include="source\function\render\RenderResource.cpp" />
+    <ClCompile Include="source\function\render\RenderResource.cpp">
+      <Filter>function\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\component\Component.cpp">
+      <Filter>function\framework\component</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\component\MeshComponent.cpp">
+      <Filter>function\framework\component</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\component\NodeComponent.cpp">
+      <Filter>function\framework\component</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\component\TransformComponent.cpp">
+      <Filter>function\framework\component</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\assets\MeshAsset.cpp">
+      <Filter>function\framework\asset</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\object\Object.cpp">
+      <Filter>function\framework\object</Filter>
+    </ClCompile>
+    <ClCompile Include="source\function\framework\level\Level.cpp">
+      <Filter>function\framework\level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine.h" />
@@ -84,6 +122,29 @@
     <ClInclude Include="source\function\render\Pass\CameraPass.h">
       <Filter>function\render\Pass</Filter>
     </ClInclude>
-    <ClInclude Include="source\function\render\RenderResource.h" />
+    <ClInclude Include="source\function\render\RenderResource.h">
+      <Filter>function\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\component\Component.h">
+      <Filter>function\framework\component</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\component\MeshComponent.h">
+      <Filter>function\framework\component</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\component\NodeComponent.h">
+      <Filter>function\framework\component</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\component\TransformComponent.h">
+      <Filter>function\framework\component</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\assets\MeshAsset.h">
+      <Filter>function\framework\asset</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\object\Object.h">
+      <Filter>function\framework\object</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\framework\level\Level.h">
+      <Filter>function\framework\level</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

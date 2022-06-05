@@ -67,8 +67,8 @@ namespace tiny
 	struct MeshBufferResource
 	{
 	public:
-		std::vector<Vertex> mVertices;
-		std::vector<size_t> mIndices;
+		uint32_t mVertexCount;
+		uint32_t mIndexCount;
 		vk::Buffer mVertexBuffer;
 		vk::DeviceMemory mVertexBufferMemory;
 		vk::Buffer mIndexBuffer;
@@ -112,11 +112,13 @@ namespace tiny
 	public:
 		~RenderResource();
 		void initialize(const RenderResourceConfigParams& params);
+		void addRenderData(const void* VerticesData, uint32_t VerticesCount, const void* indicesData, uint32_t indicesCount);
 
 	public:
 		TransfromBufferResource mTransfromResource;
 		SampleResource mSampleResource;
-		MeshBufferResource mMeshBufferResource;
+		// 先假设这个MeshBuffer有多个
+		std::vector<MeshBufferResource> mMeshBufferResources;
 		Textrure2D mTextureResource;
 
 	private:
@@ -125,10 +127,8 @@ namespace tiny
 	private:
 		void createTransfromUniformBuffer();
 		void createTextureSampler(uint32_t mipLevels);
-		void tempLoadResource();
-		void createVertexBuffer();
-		void createIndexBuffer();
-		void tempLoadModel();
+		void createVertexBuffer(MeshBufferResource& bufferResouce,const void* VerticesData, uint32_t count);
+		void createIndexBuffer(MeshBufferResource& bufferResouce,const void* indicesData, uint32_t count);
 		void tempLoadImage();
 	};
 }

@@ -72,7 +72,7 @@ namespace tiny
 		void setupPipelines();
 		void setupDescriptorSet();
 		void setupSwapchainFramebuffers();
-		void TempUpdateUniformBuffer();
+		void TempUpdateUniformBuffer(float deltaTime);
 	};
 }
 

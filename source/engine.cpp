@@ -12,6 +12,7 @@ void tiny::TinyEngine::startEngine(const EngineConfigParams& params)
 
 void tiny::TinyEngine::shutdownEngine()
 {
+
 }
 
 void tiny::TinyEngine::run()
@@ -19,9 +20,13 @@ void tiny::TinyEngine::run()
 	std::shared_ptr<WindowSystem> windowSystem = gRuntimeGlobalContext.mWindowSystem;
 	while (!windowSystem->shouldClose())
 	{
+		static auto startTime = std::chrono::high_resolution_clock::now();
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
 		windowSystem->pollEvents();
-		logicalTick(0.01f);
-		rendererTick(0.01f);
+		logicalTick(deltaTime);
+		rendererTick(deltaTime);
 	}
 
 	gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice.waitIdle();
@@ -30,6 +35,8 @@ void tiny::TinyEngine::run()
 
 void tiny::TinyEngine::initialize()
 {
+	mLevel = std::make_shared<Level>();
+	mLevel->initialize();
 }
 
 void tiny::TinyEngine::clear()
@@ -38,6 +45,7 @@ void tiny::TinyEngine::clear()
 
 void tiny::TinyEngine::logicalTick(float deltaTime)
 {
+	mLevel->tick(deltaTime);
 }
 
 void tiny::TinyEngine::rendererTick(float deltaTime)

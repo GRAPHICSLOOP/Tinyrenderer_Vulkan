@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <filesystem>
 #include "core/base/macro.h"
+#include "function/framework/level/Level.h"
 
 namespace tiny 
 {
@@ -25,6 +26,9 @@ namespace tiny
 		void calculateFPS(float deltaTime);
 	protected: 
 		EngineConfigParams mInitParams;
+
+	private:
+		std::shared_ptr<Level> mLevel;
 	};
 }
 

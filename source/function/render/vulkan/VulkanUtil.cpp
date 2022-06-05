@@ -268,31 +268,31 @@ tiny::Textrure2D tiny::VulkanUtil::createTexture2D(
     switch (pixelFormat)
     {
     case PIXEL_FORMAT::PIXEL_FORMAT_R8G8B8_UNORM:
-        pixelSize = width * height * 3;
+        pixelSize = (size_t)width * height * 3;
         vulkanImageFormat = vk::Format::eR8G8B8Unorm;
         break;
     case PIXEL_FORMAT::PIXEL_FORMAT_R8G8B8_SRGB:
-        pixelSize = width * height * 3;
+        pixelSize = (size_t)width * height * 3;
         vulkanImageFormat = vk::Format::eR8G8B8Srgb;
         break;
     case PIXEL_FORMAT::PIXEL_FORMAT_R8G8B8A8_UNORM:
-        pixelSize = width * height * 4;
+        pixelSize = (size_t)width * height * 4;
         vulkanImageFormat = vk::Format::eR8G8B8A8Unorm;
         break;
     case PIXEL_FORMAT::PIXEL_FORMAT_R8G8B8A8_SRGB:
-        pixelSize = width * height * 4;
+        pixelSize = (size_t)width * height * 4;
         vulkanImageFormat = vk::Format::eR8G8B8A8Srgb;
         break;
     case PIXEL_FORMAT::PIXEL_FORMAT_R32G32_FLOAT:
-        pixelSize = width * height * 4 * 2;
+        pixelSize = (size_t)width * height * 4 * 2;
         vulkanImageFormat = vk::Format::eR32G32Sfloat;
         break;
     case PIXEL_FORMAT::PIXEL_FORMAT_R32G32B32_FLOAT:
-        pixelSize = width * height * 4 * 3;
+        pixelSize = (size_t)width * height * 4 * 3;
         vulkanImageFormat = vk::Format::eR32G32B32Sfloat;
         break;
     case PIXEL_FORMAT::PIXEL_FORMAT_R32G32B32A32_FLOAT:
-        pixelSize = width * height * 4 * 4;
+        pixelSize = (size_t)width * height * 4 * 4;
         vulkanImageFormat = vk::Format::eR32G32B32A32Sfloat;
         break;
     default:

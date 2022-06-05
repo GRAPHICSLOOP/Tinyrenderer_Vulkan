@@ -4,12 +4,12 @@ void tiny::RenderPipeline::initialize(const RenderPipelineConfigParams params)
 {
     mVulkanRHI = params.mVulkanRHI;
 
-	PassConfigParams passConfigParams;
-	passConfigParams.mVulkanRHI = params.mVulkanRHI;
-	passConfigParams.mRenderResource = params.mRenderResource;
+	PassConfigParams passParams;
+	passParams.mVulkanRHI = params.mVulkanRHI;
+	passParams.mRenderResource = params.mRenderResource;
 
 	mCameraPass = std::make_shared<MainCameraPass>();
-	mCameraPass->initialize(passConfigParams);
+	mCameraPass->initialize(passParams);
 }
 
 void tiny::RenderPipeline::draw(float deltaTime)
