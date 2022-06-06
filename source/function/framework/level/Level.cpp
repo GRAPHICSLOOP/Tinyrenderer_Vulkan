@@ -10,7 +10,6 @@ void tiny::Level::initialize()
 	std::shared_ptr<TransformComponent> transformComponent = std::make_shared<TransformComponent>();
 	meshComponent->attachToComponent(newObject->mRootComponent);
 	transformComponent->attachToComponent(newObject->mRootComponent);
-	//meshComponent->TempLoadMeshAsset("TestNewMesh", "models/viking_room.obj");
 
 	addObject(newObject);
 }

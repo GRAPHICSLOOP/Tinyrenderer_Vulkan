@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\function\inputSystem\inputSystem.cpp" />
     <ClCompile Include="source\function\framework\assets\MeshAsset.cpp" />
     <ClCompile Include="source\function\framework\component\MeshComponent.cpp" />
     <ClCompile Include="source\function\framework\component\NodeComponent.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="source\function\framework\component\TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\function\inputSystem\inputSystem.h" />
     <ClInclude Include="source\function\framework\assets\MeshAsset.h" />
     <ClInclude Include="source\function\framework\component\MeshComponent.h" />
     <ClInclude Include="source\function\framework\component\NodeComponent.h" />

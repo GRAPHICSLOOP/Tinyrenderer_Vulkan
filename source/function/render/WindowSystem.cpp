@@ -14,6 +14,12 @@ void tiny::WindowSystem::initialize()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // 禁止调整窗口大小
 	mWindow = glfwCreateWindow(params.mWidth, params.mHeight, params.mTitle, nullptr, nullptr);
+
+
+	// 设置回调
+	glfwSetWindowUserPointer(mWindow,this);
+	glfwSetKeyCallback(mWindow, keyCallBack);
+
 }
 
 void tiny::WindowSystem::pollEvents() const
