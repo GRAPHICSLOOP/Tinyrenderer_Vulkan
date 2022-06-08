@@ -63,9 +63,8 @@ void tiny::MainCameraPass::drawPass()
         {
             mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mVertexBuffer, &offset);
             mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mIndexBuffer, offset, vk::IndexType::eUint32);
-            mVulkanRHI->mCommandBuffer.draw(resource.mVertexCount, 1, 0, 0);
+            mVulkanRHI->mCommandBuffer.drawIndexed(resource.mVertexCount, 1, 0, 0, 0);
         }
-        //mVulkanRHI->mCommandBuffer.drawIndexed((uint32_t)mRenderResource->mMeshBufferResource.mIndices.size(), 1, 0, 0, 0);
     mVulkanRHI->mCommandBuffer.endRenderPass();
 }
 
