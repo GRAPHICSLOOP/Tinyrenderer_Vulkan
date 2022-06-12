@@ -12,10 +12,7 @@ tiny::MainCameraPass::~MainCameraPass()
     mVulkanRHI->mDevice.destroyPipelineLayout(mPipelineLayout);
     mVulkanRHI->mDevice.destroyPipeline(mPipeline);
     mVulkanRHI->mDevice.destroyRenderPass(mFrame.mRenderPass);
-    for (uint32_t i = 0; i < mDescSetLayouts.size(); i++)
-    {
-        mVulkanRHI->mDevice.destroyDescriptorSetLayout(mDescSetLayouts[i]);
-    }
+
     std::vector<FrameBufferAttachment> attachments = mFrame.getAttachments();
     for (uint32_t i = 0; i < attachments.size(); i++)
     {
@@ -64,9 +61,11 @@ void tiny::MainCameraPass::drawPass()
         mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mPipelineLayout, 0, 1, mDescriptorSets.data(), 0, nullptr);
         for (const auto& resource : mRenderResource->mModelRenderResource)
         {
-            /*mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mVertexBuffer, &offset);
-            mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mIndexBuffer, offset, vk::IndexType::eUint32);
-            mVulkanRHI->mCommandBuffer.drawIndexed(resource.mVertexCount, 1, 0, 0, 0);*/
+            mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                mPipelineLayout, 1, 1, &resource.mTextureResource.lock()->mTextureBufferResource.mDescriptorSet, 0, nullptr);
+            mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mMeshResource.lock()->mMeshBufferResource.mVertexBuffer, &offset);
+            mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mMeshResource.lock()->mMeshBufferResource.mIndexBuffer, offset, vk::IndexType::eUint32);
+            mVulkanRHI->mCommandBuffer.drawIndexed(resource.mMeshResource.lock()->mMeshBufferResource.mIndexCount, 1, 0, 0, 0);
         }
     mVulkanRHI->mCommandBuffer.endRenderPass();
 }
@@ -154,29 +153,9 @@ void tiny::MainCameraPass::setupRenderPass()
 
 void tiny::MainCameraPass::setupDescriptorSetLayout()
 {
-    mDescSetLayouts.resize(DESCRIPTOR_TYPE_COUNT);
-    vk::DescriptorSetLayoutCreateInfo info;
-
-
-    // mesh固定的uniform DescriptorSetLayout
-    vk::DescriptorSetLayoutBinding uniformBinding;
-    uniformBinding.binding = 0;
-    uniformBinding.descriptorCount = 1;
-    uniformBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
-    uniformBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-    info.bindingCount = 1;
-    info.pBindings = &uniformBinding;
-    mDescSetLayouts[DESCRIPTOR_TYPE_UNIFORM] = mVulkanRHI->mDevice.createDescriptorSetLayout(info);
-
-    // 变动较多的 sample DescriptorSetLayout
-    vk::DescriptorSetLayoutBinding sampleBinding;
-    sampleBinding.binding = 0;
-    sampleBinding.descriptorCount = 1;
-    sampleBinding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    sampleBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
-    info.bindingCount = 1;
-    info.pBindings = &sampleBinding;
-    mDescSetLayouts[DESCRIPTOR_TYPE_SAMPLE] = mVulkanRHI->mDevice.createDescriptorSetLayout(info);
+    mDescSetLayouts.resize(2);
+    mDescSetLayouts[DESCRIPTOR_TYPE_UNIFORM] = mRenderResource->getDescriptorSetLayout(DESCRIPTOR_TYPE_UNIFORM);
+    mDescSetLayouts[DESCRIPTOR_TYPE_SAMPLE] = mRenderResource->getDescriptorSetLayout(DESCRIPTOR_TYPE_SAMPLE);
 }
 
 void tiny::MainCameraPass::setupPipelines()
@@ -308,11 +287,6 @@ void tiny::MainCameraPass::setupDescriptorSet()
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(tiny::TransfromUniform);
 
-    //vk::DescriptorImageInfo imageInfo;
-    //imageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-    //imageInfo.imageView = mRenderResource->mTextureResource.mImageView;
-    //imageInfo.sampler = mRenderResource->mSampleResource.mTextureSampler;
-
     // 更新描述符
     std::array<vk::WriteDescriptorSet, 1> writeSet;
     writeSet[0].dstArrayElement = 0;
@@ -321,12 +295,6 @@ void tiny::MainCameraPass::setupDescriptorSet()
     writeSet[0].descriptorType = vk::DescriptorType::eUniformBuffer;
     writeSet[0].descriptorCount = 1;
     writeSet[0].pBufferInfo = &bufferInfo;
-    //writeSet[1].dstArrayElement = 0;
-    //writeSet[1].dstBinding = 0;
-    //writeSet[1].dstSet = mDescriptorSets[DESCRIPTOR_TYPE_SAMPLE];
-    //writeSet[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    //writeSet[1].descriptorCount = 1;
-    //writeSet[1].pImageInfo = &imageInfo;
 
     mVulkanRHI->mDevice.updateDescriptorSets(writeSet, nullptr);
 }
@@ -358,9 +326,9 @@ void tiny::MainCameraPass::setupSwapchainFramebuffers()
 void tiny::MainCameraPass::TempUpdateUniformBuffer(float deltaTime)
 {
     TransfromUniform ubo;
-    ubo.mModel = glm::scale(glm::mat4(1.f),glm::vec3(0.1f)) * glm::rotate(glm::mat4(1.f), deltaTime * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-    ubo.mView = glm::lookAt(glm::vec3(1.f), glm::vec3(0.f), glm::vec3(0.f, 0.f, 1.f));
-    ubo.mProj = glm::perspective(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
+    ubo.mModel = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
+    ubo.mView = glm::lookAtRH(glm::vec3(0.f,0.f,4.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+    ubo.mProj = glm::perspectiveRH(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
     ubo.mProj[1][1] *= -1;
 
     vk::DeviceSize deviceSize = sizeof(ubo);

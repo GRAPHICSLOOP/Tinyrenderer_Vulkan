@@ -10,6 +10,9 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
+#define DESCRIPTORMAXCOUNT_SAMPLE 32
+#define DESCRIPTORMAXCOUNT_BUFFER 1
+
 namespace tiny
 {
 	struct SwapchainSupportDetails

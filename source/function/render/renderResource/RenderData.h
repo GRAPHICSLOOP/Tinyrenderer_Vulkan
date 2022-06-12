@@ -5,6 +5,13 @@
 
 namespace tiny
 {
+	enum DESCRIPTOR_TYPE
+	{
+		DESCRIPTOR_TYPE_UNIFORM = 0,
+		DESCRIPTOR_TYPE_SAMPLE = 1,
+		DESCRIPTOR_TYPE_COUNT = 2
+	};
+
 	struct Vertex
 	{
 	public:

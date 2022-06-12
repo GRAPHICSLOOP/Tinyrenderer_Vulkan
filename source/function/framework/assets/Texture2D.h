@@ -8,7 +8,7 @@ namespace tiny
 	public:
 		void initialize(std::string path);
 		void loadTexture();
-		std::shared_ptr<TextureResource> getTextureResource() { return mTextureResource; }
+		std::shared_ptr<TextureResource> getTextureResource();
 		size_t getId() { return mId; }
 	public:
 		uint32_t mWidth;

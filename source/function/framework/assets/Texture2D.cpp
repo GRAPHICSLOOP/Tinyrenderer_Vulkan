@@ -4,8 +4,7 @@
 #include "core/base/macro.h"
 #include "function/global/GlobalContext.h"
 #include "function/render/vulkan/VulkanUtil.h"
-
-const std::string TEXTURE_PATH = "models/viking_room.png";
+#include "function/render/renderResource/RenderResource.h"
 
 void tiny::Texture2D::initialize(std::string path)
 {
@@ -40,4 +39,9 @@ void tiny::Texture2D::loadTexture()
 
     stbi_image_free(pixels);
     return;
+}
+
+std::shared_ptr<tiny::TextureResource> tiny::Texture2D::getTextureResource()
+{
+    return gRuntimeGlobalContext.mRenderSystem->mRenderResource->mGlobalTextureResources[mId].lock();
 }

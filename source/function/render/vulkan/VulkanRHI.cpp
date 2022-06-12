@@ -230,15 +230,15 @@ void tiny::VulkanRHI::createCommandBuffers()
 void tiny::VulkanRHI::createDescriptorPool()
 {
     std::array<vk::DescriptorPoolSize, 2> poolSize;
-    poolSize[0].descriptorCount = 1;
+    poolSize[0].descriptorCount = DESCRIPTORMAXCOUNT_BUFFER;
     poolSize[0].type = vk::DescriptorType::eUniformBuffer;
-    poolSize[1].descriptorCount = 1;
+    poolSize[1].descriptorCount = DESCRIPTORMAXCOUNT_SAMPLE;
     poolSize[1].type = vk::DescriptorType::eCombinedImageSampler;
 
     vk::DescriptorPoolCreateInfo info;
     info.poolSizeCount = 2;
     info.pPoolSizes = poolSize.data();
-    info.maxSets = 2; // 这里其实可以设置大一些，但是为了不浪费，我们就将它的大小刚好等于我们后面分配的DescriptorSet的大小
+    info.maxSets = DESCRIPTORMAXCOUNT_BUFFER + DESCRIPTORMAXCOUNT_SAMPLE;
     info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
 
     mDescriptorPool = mDevice.createDescriptorPool(info);

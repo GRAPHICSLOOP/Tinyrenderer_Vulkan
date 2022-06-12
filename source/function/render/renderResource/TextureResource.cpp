@@ -5,6 +5,7 @@
 
 tiny::TextureResource::TextureResource()
 {
+    mId = 0;
     mInit = false;
 }
 
@@ -28,6 +29,7 @@ void tiny::TextureResource::initialize(
     mRenderResource->mGlobalTextureResources[mId] = shared_from_this();
     mTextureBufferResource = VulkanUtil::createTextureBufferResource(width, height, pixels, pixelFormat, miplevels);
     mTextureBufferResource.mTextureSampler = createTextureSampler(miplevels);
+    createDescriptorSet();
     mInit = true;
 }
 
@@ -72,22 +74,24 @@ vk::Sampler tiny::TextureResource::createTextureSampler(uint32_t mipLevels)
 
 void tiny::TextureResource::createDescriptorSet()
 {
+    vk::DescriptorSetLayout setLayout = mRenderResource->getDescriptorSetLayout(DESCRIPTOR_TYPE_SAMPLE);
+
     vk::DescriptorSetAllocateInfo info;
     info.descriptorPool = mVulkanRHI->mDescriptorPool;
     info.descriptorSetCount = 1;
-    info.pSetLayouts = mDescSetLayouts.data();
-    mDescriptorSets = mVulkanRHI->mDevice.allocateDescriptorSets(info);
+    info.pSetLayouts = &setLayout;
+    mTextureBufferResource.mDescriptorSet = mVulkanRHI->mDevice.allocateDescriptorSets(info)[0];
 
     vk::DescriptorImageInfo imageInfo;
     imageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-    imageInfo.imageView = mRenderResource->mTextureResource.mImageView;
-    imageInfo.sampler = mRenderResource->mSampleResource.mTextureSampler;
+    imageInfo.imageView = mTextureBufferResource.mImageView;
+    imageInfo.sampler = mTextureBufferResource.mTextureSampler;
 
     // 更新描述符
     std::array<vk::WriteDescriptorSet, 1> writeSet;
     writeSet[0].dstArrayElement = 0;
     writeSet[0].dstBinding = 0;
-    writeSet[0].dstSet = mDescriptorSets[DESCRIPTOR_TYPE_SAMPLE];
+    writeSet[0].dstSet = mTextureBufferResource.mDescriptorSet;
     writeSet[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
     writeSet[0].descriptorCount = 1;
     writeSet[0].pImageInfo = &imageInfo;

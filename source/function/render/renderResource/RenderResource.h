@@ -3,6 +3,7 @@
 #include "function/render/vulkan/VulkanRHI.h"
 #include "TextureResource.h"
 #include "MeshResource.h"
+#include "RenderData.h"
 
 
 namespace tiny
@@ -42,6 +43,7 @@ namespace tiny
 		void initialize(const RenderResourceConfigParams& params);
 		void createVertexBuffer(struct MeshBufferResource& bufferResouce, const void* VerticesData, uint32_t count);
 		void createIndexBuffer(struct MeshBufferResource& bufferResouce, const void* indicesData, uint32_t count);
+		vk::DescriptorSetLayout getDescriptorSetLayout(DESCRIPTOR_TYPE type);
 
 	public:
 		TransfromBufferResource mTransfromResource;
@@ -54,7 +56,7 @@ namespace tiny
 
 	private:
 		std::shared_ptr<VulkanRHI> mVulkanRHI;
-		std::array<vk::DescriptorSetLayout,2> mDescriptorSetLayout;
+		std::array<vk::DescriptorSetLayout,2> mDescSetLayouts;
 	};
 }
 
