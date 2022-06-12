@@ -1,56 +1,123 @@
-﻿#include "MeshAsset.h"
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
+﻿#include "core/base/macro.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include "MeshAsset.h"
 #include "function/global/GlobalContext.h"
 
 void tiny::MeshAsset::initialize(std::string name, std::string path)
 {
 	mName = name;
 	mSourcePath = path;
-
-    loadVertexData();
-
-    gRuntimeGlobalContext.mRenderSystem->mRenderResource->addRenderData(
-        mVertices.data(),
-        (uint32_t)mVertices.size(),
-        mIndices.data(),
-        (uint32_t)mIndices.size());
-
+    loadModel();
 }
 
-void tiny::MeshAsset::loadVertexData()
+void tiny::MeshAsset::loadModel()
 {
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(mSourcePath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string warn, err;
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		TINYLOG_ERROR("Import failed");
+		return;
+	}
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, mSourcePath.c_str())) {
-        throw std::runtime_error(warn + err);
-    }
+	mDirectory = mSourcePath.substr(0, mSourcePath.find_last_of('/'));
+	processNode(scene->mRootNode, scene);
+	for (const auto& mesh : mMeshParts)
+	{
+		ModelRenderResource resource;
+		resource.mMeshResource = mesh.mMeshResource;
+		resource.mTextureResource = mesh.mTexture2D->getTextureResource();
+		gRuntimeGlobalContext.mRenderSystem->mRenderResource->mModelRenderResource.push_back(resource);
+	}
+}
 
-    for (const auto& shape : shapes)
-    {
-        uint32_t indexOffset = 0;
+void tiny::MeshAsset::processNode(aiNode* node, const aiScene* scene)
+{
+	// 先Node处理
+	for (uint32_t i = 0; i < node->mNumMeshes; i++)
+	{
+		auto* mesh = scene->mMeshes[node->mMeshes[i]];
+		processMesh(mesh, scene);
+	}
 
-        for (const auto& index : shape.mesh.indices)
-        {
-            Vertex vertex;
-            vertex.mColor = { 1,1,1 };
-            vertex.mPosition = {
-                attrib.vertices[(uint64_t)3 * index.vertex_index],
-                attrib.vertices[(uint64_t)3 * index.vertex_index + 1],
-                attrib.vertices[(uint64_t)3 * index.vertex_index + 2]
-            };
+	// 遍历子Node处理Mesh
+	for (uint32_t i = 0; i < node->mNumChildren; i++)
+	{
+		processNode(node->mChildren[i], scene);
+	}
+}
 
-            vertex.mTexCoord = {
-                attrib.texcoords[(uint64_t)2 * index.texcoord_index],
-                1.f - attrib.texcoords[(uint64_t)2 * index.texcoord_index + 1]
-            };
+void tiny::MeshAsset::processMesh(aiMesh* mesh, const aiScene* scene)
+{
+	MeshPart meshPart;
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+	vertices.resize(mesh->mNumVertices);
 
-            mVertices.push_back(vertex);
-            mIndices.push_back(indexOffset++);
-        }
-    }
+	// vertices
+	if (mesh->mTextureCoords[0])
+	{
+		for (uint32_t i = 0; i < mesh->mNumVertices; i++)
+		{
+			Vertex vertex;
+			vertex.mPosition.x = mesh->mVertices[i].x;
+			vertex.mPosition.y = mesh->mVertices[i].y;
+			vertex.mPosition.z = mesh->mVertices[i].z;
+			vertex.mTexCoord.x = mesh->mTextureCoords[0][i].x;
+			vertex.mTexCoord.y = mesh->mTextureCoords[0][i].y;
+			vertex.mColor = glm::vec3(1.f);
+			vertices[i] = vertex;
+		}
+	}
+	else
+	{
+		for (uint32_t i = 0; i < mesh->mNumVertices; i++)
+		{
+			Vertex vertex;
+			vertex.mPosition.x = mesh->mVertices[i].x;
+			vertex.mPosition.y = mesh->mVertices[i].y;
+			vertex.mPosition.z = mesh->mVertices[i].z;
+			vertex.mTexCoord = glm::vec2(0.f);
+			vertex.mColor = glm::vec3(1.f);
+			vertices[i] = vertex;
+		}
+	}
+
+	// indices
+	for (uint32_t i = 0; i < mesh->mNumFaces; i++)
+	{
+		const aiFace& face = mesh->mFaces[i];
+		for (uint32_t j = 0; j < face.mNumIndices; j++)
+		{
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+
+	// material
+	if (mesh->mMaterialIndex >= 0)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		meshPart.mTexture2D = loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse");
+	}
+	else
+	{
+		TINYLOG_WARN("该mesh没有对应的贴图: {}", mesh->mName.C_Str());
+	}
+
+	meshPart.mMeshResource = std::make_shared<MeshResource>(vertices, indices);
+
+	mMeshParts.push_back(meshPart);
+}
+
+std::shared_ptr<tiny::Texture2D> tiny::MeshAsset::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+{
+	aiString str;
+	mat->GetTexture(type, 0, &str);
+
+	std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
+	texture->initialize(mDirectory + '/' + str.C_Str());
+	return texture;
 }

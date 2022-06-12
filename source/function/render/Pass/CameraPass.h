@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <unordered_map>
 #include "function/render/vulkan/VulkanRHI.h"
-#include "function/render/RenderResource.h"
+#include "function/render/renderResource/RenderResource.h"
 
 namespace tiny
 {
@@ -11,6 +11,14 @@ namespace tiny
 	{
 		TYPE_DEPTH
 	};
+
+	enum DESCRIPTOR_TYPE
+	{
+		DESCRIPTOR_TYPE_UNIFORM = 0,
+		DESCRIPTOR_TYPE_SAMPLE = 1,
+		DESCRIPTOR_TYPE_COUNT = 2
+	};
+	
 
 	struct FrameBufferAttachment
 	{
@@ -59,7 +67,7 @@ namespace tiny
 	private:
 		std::shared_ptr<VulkanRHI> mVulkanRHI;
 		std::shared_ptr<RenderResource> mRenderResource;
-		vk::DescriptorSetLayout mDescSetLayout;
+		std::vector<vk::DescriptorSetLayout> mDescSetLayouts;
 		vk::PipelineLayout mPipelineLayout;
 		vk::Pipeline mPipeline;
 		std::vector<vk::DescriptorSet> mDescriptorSets;

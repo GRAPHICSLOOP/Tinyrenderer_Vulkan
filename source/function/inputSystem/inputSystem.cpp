@@ -1,4 +1,4 @@
-﻿#include "inputSystem.h"
+﻿#include "InputSystem.h"
 #include "function/global/GlobalContext.h"
 #include "core/base/macro.h"
 

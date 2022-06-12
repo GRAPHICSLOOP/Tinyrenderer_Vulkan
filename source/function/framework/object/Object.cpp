@@ -23,7 +23,8 @@ void tiny::Object::onKey(int key, int scancode, int action, int mods)
 			std::shared_ptr<MeshComponent> meshComponent = mRootComponent->getComponent<MeshComponent>();
 			if (meshComponent)
 			{
-				meshComponent->TempLoadMeshAsset("TestNewMesh", "models/viking_room.obj");
+				//meshComponent->TempLoadMeshAsset("TestNewMesh", "models/viking_room.obj");
+				meshComponent->TempLoadMeshAsset("TestNewMesh", "models/nanosuit/nanosuit.obj");
 			}
 			else
 			{

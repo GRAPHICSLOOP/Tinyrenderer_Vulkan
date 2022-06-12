@@ -238,7 +238,7 @@ void tiny::VulkanRHI::createDescriptorPool()
     vk::DescriptorPoolCreateInfo info;
     info.poolSizeCount = 2;
     info.pPoolSizes = poolSize.data();
-    info.maxSets = 1;
+    info.maxSets = 2; // 这里其实可以设置大一些，但是为了不浪费，我们就将它的大小刚好等于我们后面分配的DescriptorSet的大小
     info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
 
     mDescriptorPool = mDevice.createDescriptorPool(info);
@@ -300,7 +300,7 @@ void tiny::VulkanRHI::createSwapchainImageViews()
 {
     for (uint32_t i = 0; i < mSwapchainSupportDetails.mImageCount; i++)
     {
-        vk::ImageView imageView = VulkanUtil::createImageView(mDevice, 
+        vk::ImageView imageView = VulkanUtil::createImageView(
             vk::ImageAspectFlagBits::eColor, 
             mSwapchainSupportDetails.mFormat.format, 
             mSwapchainImages[i]);

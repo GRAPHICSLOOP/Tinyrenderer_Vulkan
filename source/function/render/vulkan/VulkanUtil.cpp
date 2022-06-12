@@ -1,11 +1,12 @@
 ﻿#include<fstream>
 #include "VulkanUtil.h"
 #include "core/base/macro.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
-uint32_t tiny::VulkanUtil::findMemoryType(vk::PhysicalDevice phyDevice, uint32_t typeFilter, vk::MemoryPropertyFlags property)
+
+uint32_t tiny::VulkanUtil::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags property)
 {
+    vk::PhysicalDevice phyDevice = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mPhyDevice;
+
     vk::PhysicalDeviceMemoryProperties memProperties;
     memProperties = phyDevice.getMemoryProperties();
 
@@ -21,8 +22,6 @@ uint32_t tiny::VulkanUtil::findMemoryType(vk::PhysicalDevice phyDevice, uint32_t
 }
 
 void tiny::VulkanUtil::createImage(
-    vk::PhysicalDevice phyDevice,
-    vk::Device device,
     uint32_t imageWidth,
     uint32_t imageHeight,
     vk::Format format,
@@ -34,6 +33,9 @@ void tiny::VulkanUtil::createImage(
     uint32_t mipLevel,
     vk::SampleCountFlagBits numSamples)
 {
+    vk::PhysicalDevice phyDevice = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mPhyDevice;
+    vk::Device device = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice;
+
     vk::ImageCreateInfo imageInfo;
     imageInfo.arrayLayers = 1;
     imageInfo.mipLevels = mipLevel;
@@ -54,7 +56,7 @@ void tiny::VulkanUtil::createImage(
 
     vk::MemoryAllocateInfo allocInfo;
     allocInfo.setAllocationSize(memRequirements.size);
-    allocInfo.memoryTypeIndex = findMemoryType(phyDevice,memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
     vk::Result result = device.allocateMemory(&allocInfo, nullptr, &imageMemory);
     CHECK_NULL(imageMemory);
@@ -63,11 +65,12 @@ void tiny::VulkanUtil::createImage(
 }
 
 vk::ImageView tiny::VulkanUtil::createImageView(
-    vk::Device device,
     vk::ImageAspectFlags aspectMask,
     vk::Format fomat,
     vk::Image image)
 {
+    vk::Device device = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice;
+
     vk::ImageSubresourceRange range;
     range.aspectMask = aspectMask;
     range.baseArrayLayer = 0;
@@ -106,8 +109,10 @@ std::vector<char> tiny::VulkanUtil::readFile(const char* fileName)
     return buffer;
 }
 
-vk::ShaderModule tiny::VulkanUtil::createShaderModule(vk::Device device, const std::vector<char>& code)
+vk::ShaderModule tiny::VulkanUtil::createShaderModule(const std::vector<char>& code)
 {
+    vk::Device device = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice;
+
     vk::ShaderModuleCreateInfo shaderInfo;
     shaderInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
     shaderInfo.codeSize = code.size();
@@ -117,21 +122,21 @@ vk::ShaderModule tiny::VulkanUtil::createShaderModule(vk::Device device, const s
     return shaderModule;
 }
 
-vk::ShaderModule tiny::VulkanUtil::loadShaderModuleFromFile(vk::Device device, const char* fileName)
+vk::ShaderModule tiny::VulkanUtil::loadShaderModuleFromFile(const char* fileName)
 {
     std::vector<char> code = readFile(fileName);
-    return createShaderModule(device, code);
+    return createShaderModule(code);
 }
 
 void tiny::VulkanUtil::createBuffer(
-    vk::PhysicalDevice phyDevice,
-    vk::Device device,
     vk::DeviceSize size,
     vk::BufferUsageFlags usage,
     vk::MemoryPropertyFlags properties,
     vk::Buffer& buffer,
     vk::DeviceMemory& bufferMemory)
 {
+    vk::Device device = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice;
+
     vk::BufferCreateInfo bufferInfo;
     bufferInfo.sharingMode = vk::SharingMode::eExclusive;
     bufferInfo.size = size;
@@ -144,7 +149,7 @@ void tiny::VulkanUtil::createBuffer(
 
     vk::MemoryAllocateInfo allocInfo;
     allocInfo.setAllocationSize(memRequirements.size);
-    allocInfo.setMemoryTypeIndex(findMemoryType(phyDevice, memRequirements.memoryTypeBits, properties));
+    allocInfo.setMemoryTypeIndex(findMemoryType(memRequirements.memoryTypeBits, properties));
     bufferMemory = device.allocateMemory(allocInfo);
     CHECK_NULL(bufferMemory);
 
@@ -153,13 +158,14 @@ void tiny::VulkanUtil::createBuffer(
 }
 
 void tiny::VulkanUtil::transitionImageLayout(
-    VulkanRHI* vulkanRHI,
     vk::Image& image,
     vk::Format format,
     vk::ImageLayout oldLayout,
     vk::ImageLayout newLayout,
     uint32_t mipLevel)
 {
+    std::shared_ptr<VulkanRHI> vulkanRHI = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI;
+
     vk::PipelineStageFlags sourceStage;
     vk::PipelineStageFlags destinationStage;
 
@@ -233,11 +239,12 @@ void tiny::VulkanUtil::transitionImageLayout(
 }
 
 void tiny::VulkanUtil::copyBuffer(
-    VulkanRHI* vulkanRHI,
     vk::Buffer srcBuffer,
     vk::Buffer dstBuffer,
     vk::DeviceSize size)
 {
+    std::shared_ptr<VulkanRHI> vulkanRHI = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI;
+
     vk::CommandBuffer buffer = vulkanRHI->beginSingleTimeBuffer();
 
     vk::BufferCopy bufferCopy;
@@ -249,19 +256,16 @@ void tiny::VulkanUtil::copyBuffer(
     vulkanRHI->endSingleTimeBuffer(buffer);
 }
 
-tiny::Textrure2D tiny::VulkanUtil::createTexture2D(
-    VulkanRHI* vulkanRHI,
+tiny::TextureBufferResource tiny::VulkanUtil::createTextureBufferResource(
     uint32_t width,
     uint32_t height,
     void* pixels,
     PIXEL_FORMAT pixelFormat,
     uint32_t miplevels)
 {
-    tiny::Textrure2D texture2D;
-    texture2D.mFormat = pixelFormat;
-    texture2D.mWidth = width;
-    texture2D.mHeight = height;
-    texture2D.mMiplevels = miplevels;
+    std::shared_ptr<VulkanRHI> vulkanRHI = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI;
+
+    TextureBufferResource textureBufferResource;
 
     size_t pixelSize = 0;
     vk::Format vulkanImageFormat;
@@ -303,8 +307,6 @@ tiny::Textrure2D tiny::VulkanUtil::createTexture2D(
     vk::Buffer stagingBuffer;
     vk::DeviceMemory stagingBufferMemory;
     createBuffer(
-        vulkanRHI->mPhyDevice,
-        vulkanRHI->mDevice,
         pixelSize,
         vk::BufferUsageFlagBits::eTransferSrc,
         vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
@@ -318,46 +320,45 @@ tiny::Textrure2D tiny::VulkanUtil::createTexture2D(
 
     // create image
     createImage(
-        vulkanRHI->mPhyDevice,
-        vulkanRHI->mDevice,
         width,
         height,
         vulkanImageFormat,
         vk::ImageTiling::eOptimal,
         vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc,
         vk::MemoryPropertyFlagBits::eDeviceLocal,
-        texture2D.mImage,
-        texture2D.mMemory,
+        textureBufferResource.mImage,
+        textureBufferResource.mMemory,
         miplevels,
         vk::SampleCountFlagBits::e1);
 
     transitionImageLayout(
-        vulkanRHI,
-        texture2D.mImage,
+        textureBufferResource.mImage,
         vulkanImageFormat,
         vk::ImageLayout::eUndefined,
         vk::ImageLayout::eTransferDstOptimal,
         miplevels);
 
-    copyBufferToImage(vulkanRHI, stagingBuffer, texture2D.mImage, width, height);
+    copyBufferToImage(stagingBuffer, textureBufferResource.mImage, width, height);
 
     vulkanRHI->mDevice.destroyBuffer(stagingBuffer);
     vulkanRHI->mDevice.freeMemory(stagingBufferMemory);
 
-    generateMipmaps(vulkanRHI, texture2D.mImage, width, height, miplevels);
+    generateMipmaps(textureBufferResource.mImage, width, height, miplevels);
 
-    texture2D.mImageView = createImageView(vulkanRHI->mDevice, vk::ImageAspectFlagBits::eColor, vulkanImageFormat, texture2D.mImage);
+    textureBufferResource.mImageView = createImageView(vk::ImageAspectFlagBits::eColor, vulkanImageFormat, textureBufferResource.mImage);
 
     // check
-    CHECK_NULL(texture2D.mImage);
-    CHECK_NULL(texture2D.mImageView);
-    CHECK_NULL(texture2D.mMemory);
+    CHECK_NULL(textureBufferResource.mImage);
+    CHECK_NULL(textureBufferResource.mImageView);
+    CHECK_NULL(textureBufferResource.mMemory);
 
-    return texture2D;
+    return textureBufferResource;
 }
 
-void tiny::VulkanUtil::copyBufferToImage(VulkanRHI* vulkanRHI, vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height)
+void tiny::VulkanUtil::copyBufferToImage(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height)
 {
+    std::shared_ptr<VulkanRHI> vulkanRHI = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI;
+
     vk::ImageSubresourceLayers subresource;
     subresource.setAspectMask(vk::ImageAspectFlagBits::eColor);
     subresource.setLayerCount(1);
@@ -378,8 +379,10 @@ void tiny::VulkanUtil::copyBufferToImage(VulkanRHI* vulkanRHI, vk::Buffer buffer
     vulkanRHI->endSingleTimeBuffer(commandBuffer);
 }
 
-void tiny::VulkanUtil::generateMipmaps(VulkanRHI* vulkanRHI, vk::Image image, uint32_t width, uint32_t hegith, uint32_t miplevels)
+void tiny::VulkanUtil::generateMipmaps(vk::Image image, uint32_t width, uint32_t hegith, uint32_t miplevels)
 {
+    std::shared_ptr<VulkanRHI> vulkanRHI = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI;
+
     vk::CommandBuffer commandBuffer = vulkanRHI->beginSingleTimeBuffer();
 
     vk::DependencyFlags dependency;
@@ -451,25 +454,4 @@ void tiny::VulkanUtil::generateMipmaps(VulkanRHI* vulkanRHI, vk::Image image, ui
     commandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, dependency, nullptr, nullptr, barrier);
 
     vulkanRHI->endSingleTimeBuffer(commandBuffer);
-}
-
-tiny::Textrure2D tiny::VulkanUtil::loadTexture2DFormFile(VulkanRHI* vulkanRHI, const char* filePath)
-{
-    int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-    CHECK_NULL(pixels);
-    vk::DeviceSize DeviceSize = (uint64_t)texWidth * texHeight * 4;
-    uint32_t miplevels = (uint32_t)std::floor(std::log2(std::max(texWidth, texHeight))) + 1;
-
-    tiny::Textrure2D texture2D = createTexture2D(
-        vulkanRHI,
-        texWidth,
-        texHeight,
-        pixels, 
-        tiny::PIXEL_FORMAT::PIXEL_FORMAT_R8G8B8A8_UNORM, 
-        miplevels);
-
-    stbi_image_free(pixels);
-
-    return texture2D;
 }

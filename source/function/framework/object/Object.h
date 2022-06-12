@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "function/framework/component/NodeComponent.h"
-#include "function/inputSystem/inputSystem.h"
+#include "function/inputSystem/InputSystem.h"
 
 namespace tiny
 {

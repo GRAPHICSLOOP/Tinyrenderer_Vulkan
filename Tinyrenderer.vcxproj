@@ -19,16 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\function\inputSystem\inputSystem.cpp" />
+    <ClCompile Include="source\function\render\renderResource\MeshResource.cpp" />
+    <ClCompile Include="source\function\inputSystem\InputSystem.cpp" />
     <ClCompile Include="source\function\framework\assets\MeshAsset.cpp" />
     <ClCompile Include="source\function\framework\component\MeshComponent.cpp" />
     <ClCompile Include="source\function\framework\component\NodeComponent.cpp" />
     <ClCompile Include="source\function\framework\component\Component.cpp" />
     <ClCompile Include="source\function\framework\object\Object.cpp" />
     <ClCompile Include="source\function\framework\level\Level.cpp" />
-    <ClCompile Include="source\function\render\RenderResource.cpp" />
+    <ClCompile Include="source\function\render\renderResource\RenderResource.cpp" />
     <ClCompile Include="source\function\render\RenderPipeline.cpp" />
-    <ClCompile Include="source\function\render\Pass\CameraPass.cpp" />
+    <ClCompile Include="source\function\render\pass\CameraPass.cpp" />
     <ClCompile Include="source\core\log\LogSystem.cpp" />
     <ClCompile Include="source\function\render\RenderSystem.cpp" />
     <ClCompile Include="source\function\global\GlobalContext.cpp" />
@@ -38,18 +39,22 @@
     <ClCompile Include="source\function\render\vulkan\VulkanRHI.cpp" />
     <ClCompile Include="source\function\render\vulkan\VulkanUtil.cpp" />
     <ClCompile Include="source\function\framework\component\TransformComponent.cpp" />
+    <ClCompile Include="source\function\render\renderResource\TextureResource.cpp" />
+    <ClCompile Include="source\function\framework\assets\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\function\inputSystem\inputSystem.h" />
+    <ClInclude Include="source\function\render\renderResource\MeshResource.h" />
+    <ClInclude Include="source\function\inputSystem\InputSystem.h" />
     <ClInclude Include="source\function\framework\assets\MeshAsset.h" />
     <ClInclude Include="source\function\framework\component\MeshComponent.h" />
     <ClInclude Include="source\function\framework\component\NodeComponent.h" />
     <ClInclude Include="source\function\framework\component\Component.h" />
     <ClInclude Include="source\function\framework\object\Object.h" />
     <ClInclude Include="source\function\framework\level\Level.h" />
-    <ClInclude Include="source\function\render\RenderResource.h" />
+    <ClInclude Include="source\function\render\renderResource\RenderData.h" />
+    <ClInclude Include="source\function\render\renderResource\RenderResource.h" />
     <ClInclude Include="source\function\render\RenderPipeline.h" />
-    <ClInclude Include="source\function\render\Pass\CameraPass.h" />
+    <ClInclude Include="source\function\render\pass\CameraPass.h" />
     <ClInclude Include="source\core\base\macro.h" />
     <ClInclude Include="source\core\log\LogSystem.h" />
     <ClInclude Include="source\function\render\RenderSystem.h" />
@@ -59,6 +64,8 @@
     <ClInclude Include="source\function\render\vulkan\VulkanRHI.h" />
     <ClInclude Include="source\function\render\vulkan\VulkanUtil.h" />
     <ClInclude Include="source\function\framework\component\TransformComponent.h" />
+    <ClInclude Include="source\function\render\renderResource\TextureResource.h" />
+    <ClInclude Include="source\function\framework\assets\Texture2D.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -160,14 +167,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\tool;F:\Jacson\Documents\Learning\Tinyrenderer\source;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glfw\include;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\VulkanSDK\include;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glm;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\assimp\include;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\tool;F:\Jacson\Documents\Learning\Tinyrenderer\source;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glfw\include;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\VulkanSDK\include;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glm;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glfw\lib;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\VulkanSDK\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\assimp\lib;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glfw\lib;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\VulkanSDK\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;vulkan-1.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>assimp-vc142-mt.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

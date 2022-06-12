@@ -12,7 +12,10 @@ tiny::MainCameraPass::~MainCameraPass()
     mVulkanRHI->mDevice.destroyPipelineLayout(mPipelineLayout);
     mVulkanRHI->mDevice.destroyPipeline(mPipeline);
     mVulkanRHI->mDevice.destroyRenderPass(mFrame.mRenderPass);
-    mVulkanRHI->mDevice.destroyDescriptorSetLayout(mDescSetLayout);
+    for (uint32_t i = 0; i < mDescSetLayouts.size(); i++)
+    {
+        mVulkanRHI->mDevice.destroyDescriptorSetLayout(mDescSetLayouts[i]);
+    }
     std::vector<FrameBufferAttachment> attachments = mFrame.getAttachments();
     for (uint32_t i = 0; i < attachments.size(); i++)
     {
@@ -58,12 +61,12 @@ void tiny::MainCameraPass::drawPass()
     mVulkanRHI->mCommandBuffer.beginRenderPass(passBegineInfo, vk::SubpassContents::eInline);
         mVulkanRHI->mCommandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, mPipeline);
         vk::DeviceSize offset = 0;
-        mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mPipelineLayout, 0, 1, &mDescriptorSets[0], 0, nullptr);
-        for (const auto& resource : mRenderResource->mMeshBufferResources)
+        mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mPipelineLayout, 0, 1, mDescriptorSets.data(), 0, nullptr);
+        for (const auto& resource : mRenderResource->mModelRenderResource)
         {
-            mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mVertexBuffer, &offset);
+            /*mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mVertexBuffer, &offset);
             mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mIndexBuffer, offset, vk::IndexType::eUint32);
-            mVulkanRHI->mCommandBuffer.drawIndexed(resource.mVertexCount, 1, 0, 0, 0);
+            mVulkanRHI->mCommandBuffer.drawIndexed(resource.mVertexCount, 1, 0, 0, 0);*/
         }
     mVulkanRHI->mCommandBuffer.endRenderPass();
 }
@@ -73,8 +76,6 @@ void tiny::MainCameraPass::setupAttachments()
     FrameBufferAttachment depthFrameBufferAttachment;
     depthFrameBufferAttachment.mFormat = vk::Format::eD24UnormS8Uint;
     VulkanUtil::createImage(
-        mVulkanRHI->mPhyDevice,
-        mVulkanRHI->mDevice,
         mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width,
         mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height,
         depthFrameBufferAttachment.mFormat,
@@ -84,7 +85,6 @@ void tiny::MainCameraPass::setupAttachments()
         depthFrameBufferAttachment.mImage,
         depthFrameBufferAttachment.mMemory);
     depthFrameBufferAttachment.mImageView = VulkanUtil::createImageView(
-        mVulkanRHI->mDevice,
         vk::ImageAspectFlagBits::eDepth,
         depthFrameBufferAttachment.mFormat,
         depthFrameBufferAttachment.mImage);
@@ -92,7 +92,6 @@ void tiny::MainCameraPass::setupAttachments()
     mFrame.mAttachments.insert(std::make_pair(ATTACHMENT_TYPE::TYPE_DEPTH, depthFrameBufferAttachment));
 
     VulkanUtil::transitionImageLayout(
-        mVulkanRHI.get(),
         depthFrameBufferAttachment.mImage,
         depthFrameBufferAttachment.mFormat,
         vk::ImageLayout::eUndefined,
@@ -155,25 +154,29 @@ void tiny::MainCameraPass::setupRenderPass()
 
 void tiny::MainCameraPass::setupDescriptorSetLayout()
 {
-    std::array<vk::DescriptorSetLayoutBinding, 2> bindings;
-    vk::DescriptorSetLayoutBinding& uniformBinding = bindings[0];
+    mDescSetLayouts.resize(DESCRIPTOR_TYPE_COUNT);
+    vk::DescriptorSetLayoutCreateInfo info;
+
+
+    // mesh固定的uniform DescriptorSetLayout
+    vk::DescriptorSetLayoutBinding uniformBinding;
     uniformBinding.binding = 0;
     uniformBinding.descriptorCount = 1;
     uniformBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
     uniformBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
+    info.bindingCount = 1;
+    info.pBindings = &uniformBinding;
+    mDescSetLayouts[DESCRIPTOR_TYPE_UNIFORM] = mVulkanRHI->mDevice.createDescriptorSetLayout(info);
 
-    vk::DescriptorSetLayoutBinding& sampleBinding = bindings[1];
-    sampleBinding.binding = 1;
+    // 变动较多的 sample DescriptorSetLayout
+    vk::DescriptorSetLayoutBinding sampleBinding;
+    sampleBinding.binding = 0;
     sampleBinding.descriptorCount = 1;
     sampleBinding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
     sampleBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
-
-    vk::DescriptorSetLayoutCreateInfo info;
-    info.bindingCount = (uint32_t)bindings.size();
-    info.pBindings = bindings.data();
-
-    mDescSetLayout = mVulkanRHI->mDevice.createDescriptorSetLayout(info);
-    CHECK_NULL(mDescSetLayout);
+    info.bindingCount = 1;
+    info.pBindings = &sampleBinding;
+    mDescSetLayouts[DESCRIPTOR_TYPE_SAMPLE] = mVulkanRHI->mDevice.createDescriptorSetLayout(info);
 }
 
 void tiny::MainCameraPass::setupPipelines()
@@ -193,8 +196,8 @@ void tiny::MainCameraPass::setupPipelines()
     // shaderStatus
     std::array<vk::PipelineShaderStageCreateInfo, 2> shaderStatus;
     vk::PipelineShaderStageCreateInfo& vertexShader = shaderStatus[0];
-    vk::ShaderModule vertShaderModule = VulkanUtil::loadShaderModuleFromFile(mVulkanRHI->mDevice, "shaders/vert.spv");
-    vk::ShaderModule fragShaderModule = VulkanUtil::loadShaderModuleFromFile(mVulkanRHI->mDevice, "shaders/frag.spv");
+    vk::ShaderModule vertShaderModule = VulkanUtil::loadShaderModuleFromFile("shaders/vert.spv");
+    vk::ShaderModule fragShaderModule = VulkanUtil::loadShaderModuleFromFile("shaders/frag.spv");
     vertexShader.module = vertShaderModule;
     vertexShader.pName = "main";
     vertexShader.stage = vk::ShaderStageFlagBits::eVertex;
@@ -266,8 +269,8 @@ void tiny::MainCameraPass::setupPipelines()
     
     // pipeline layout
     vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
-    pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &mDescSetLayout;
+    pipelineLayoutInfo.setLayoutCount = (uint32_t)mDescSetLayouts.size();
+    pipelineLayoutInfo.pSetLayouts = mDescSetLayouts.data();
     mPipelineLayout = mVulkanRHI->mDevice.createPipelineLayout(pipelineLayoutInfo);
     
     // pipeline RenderPass
@@ -297,7 +300,7 @@ void tiny::MainCameraPass::setupDescriptorSet()
     vk::DescriptorSetAllocateInfo info;
     info.descriptorPool = mVulkanRHI->mDescriptorPool;
     info.descriptorSetCount = 1;
-    info.pSetLayouts = &mDescSetLayout;
+    info.pSetLayouts = mDescSetLayouts.data();
     mDescriptorSets = mVulkanRHI->mDevice.allocateDescriptorSets(info);
 
     vk::DescriptorBufferInfo bufferInfo;
@@ -305,25 +308,25 @@ void tiny::MainCameraPass::setupDescriptorSet()
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(tiny::TransfromUniform);
 
-    vk::DescriptorImageInfo imageInfo;
-    imageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-    imageInfo.imageView = mRenderResource->mTextureResource.mImageView;
-    imageInfo.sampler = mRenderResource->mSampleResource.mTextureSampler;
+    //vk::DescriptorImageInfo imageInfo;
+    //imageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    //imageInfo.imageView = mRenderResource->mTextureResource.mImageView;
+    //imageInfo.sampler = mRenderResource->mSampleResource.mTextureSampler;
 
     // 更新描述符
-    std::array<vk::WriteDescriptorSet, 2> writeSet;
+    std::array<vk::WriteDescriptorSet, 1> writeSet;
     writeSet[0].dstArrayElement = 0;
     writeSet[0].dstBinding = 0;
-    writeSet[0].dstSet = mDescriptorSets[0];
+    writeSet[0].dstSet = mDescriptorSets[DESCRIPTOR_TYPE_UNIFORM];
     writeSet[0].descriptorType = vk::DescriptorType::eUniformBuffer;
     writeSet[0].descriptorCount = 1;
     writeSet[0].pBufferInfo = &bufferInfo;
-    writeSet[1].dstArrayElement = 0;
-    writeSet[1].dstBinding = 1;
-    writeSet[1].dstSet = mDescriptorSets[0];
-    writeSet[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    writeSet[1].descriptorCount = 1;
-    writeSet[1].pImageInfo = &imageInfo;
+    //writeSet[1].dstArrayElement = 0;
+    //writeSet[1].dstBinding = 0;
+    //writeSet[1].dstSet = mDescriptorSets[DESCRIPTOR_TYPE_SAMPLE];
+    //writeSet[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    //writeSet[1].descriptorCount = 1;
+    //writeSet[1].pImageInfo = &imageInfo;
 
     mVulkanRHI->mDevice.updateDescriptorSets(writeSet, nullptr);
 }
@@ -355,7 +358,7 @@ void tiny::MainCameraPass::setupSwapchainFramebuffers()
 void tiny::MainCameraPass::TempUpdateUniformBuffer(float deltaTime)
 {
     TransfromUniform ubo;
-    ubo.mModel = glm::rotate(glm::mat4(1.f), deltaTime * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+    ubo.mModel = glm::scale(glm::mat4(1.f),glm::vec3(0.1f)) * glm::rotate(glm::mat4(1.f), deltaTime * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
     ubo.mView = glm::lookAt(glm::vec3(1.f), glm::vec3(0.f), glm::vec3(0.f, 0.f, 1.f));
     ubo.mProj = glm::perspective(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
     ubo.mProj[1][1] *= -1;
