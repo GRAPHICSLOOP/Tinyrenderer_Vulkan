@@ -11,7 +11,7 @@ const bool enableValidationLayers = true;
 #endif
 
 #define DESCRIPTORMAXCOUNT_SAMPLE 32
-#define DESCRIPTORMAXCOUNT_BUFFER 1
+#define DESCRIPTORMAXCOUNT_BUFFER 4
 
 namespace tiny
 {

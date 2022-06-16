@@ -110,6 +110,9 @@
     <ClCompile Include="source\function\framework\assets\Texture2D.cpp">
       <Filter>function\framework\asset</Filter>
     </ClCompile>
+    <ClCompile Include="source\function\render\RenderCamera.cpp">
+      <Filter>function\render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine.h" />
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="source\function\render\renderResource\RenderData.h">
       <Filter>function\render\renderResource</Filter>
+    </ClInclude>
+    <ClInclude Include="source\function\render\RenderCamera.h">
+      <Filter>function\render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

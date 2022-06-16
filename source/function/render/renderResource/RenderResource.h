@@ -15,15 +15,7 @@ namespace tiny
 		std::weak_ptr<class TextureResource> mTextureResource;
 	};
 
-	struct TransfromUniform
-	{
-	public:
-		glm::mat4 mModel;
-		glm::mat4 mView;
-		glm::mat4 mProj;
-	};
-
-	struct TransfromBufferResource
+	struct BufferResource
 	{
 	public:
 		vk::Buffer mBuffer;
@@ -46,12 +38,13 @@ namespace tiny
 		vk::DescriptorSetLayout getDescriptorSetLayout(DESCRIPTOR_TYPE type);
 
 	public:
-		TransfromBufferResource mTransfromResource;
+		BufferResource mObjectBufferResource;
+		BufferResource mCameraBufferResource;
 		std::vector<ModelRenderResource> mModelRenderResource;
 		std::unordered_map<size_t,std::weak_ptr<TextureResource>> mGlobalTextureResources;
 
 	private:
-		void createTransfromUniformBuffer();
+		void createUniformBuffer();
 		void createDescriptorSetLayout();
 
 	private:

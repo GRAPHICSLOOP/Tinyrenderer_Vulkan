@@ -9,14 +9,16 @@ tiny::RenderResource::~RenderResource()
     {
         mVulkanRHI->mDevice.destroyDescriptorSetLayout(mDescSetLayouts[i]);
     }
-    mVulkanRHI->mDevice.destroyBuffer(mTransfromResource.mBuffer);
-	mVulkanRHI->mDevice.freeMemory(mTransfromResource.mMemory);
+    mVulkanRHI->mDevice.destroyBuffer(mObjectBufferResource.mBuffer);
+	mVulkanRHI->mDevice.freeMemory(mObjectBufferResource.mMemory);
+    mVulkanRHI->mDevice.destroyBuffer(mCameraBufferResource.mBuffer);
+    mVulkanRHI->mDevice.freeMemory(mCameraBufferResource.mMemory);
 }
 
 void tiny::RenderResource::initialize(const RenderResourceConfigParams& params)
 {
 	mVulkanRHI = params.mVulkanRHI;
-	createTransfromUniformBuffer();
+    createUniformBuffer();
     createDescriptorSetLayout();
 }
 
@@ -92,15 +94,24 @@ vk::DescriptorSetLayout tiny::RenderResource::getDescriptorSetLayout(DESCRIPTOR_
     return mDescSetLayouts[type];
 }
 
-void tiny::RenderResource::createTransfromUniformBuffer()
+void tiny::RenderResource::createUniformBuffer()
 {
-    vk::DeviceSize bufferSize = sizeof(TransfromUniform);
+    vk::DeviceSize bufferSize = sizeof(ObjectUniform);
     VulkanUtil::createBuffer(
         bufferSize,
         vk::BufferUsageFlagBits::eUniformBuffer,
         vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-        mTransfromResource.mBuffer,
-        mTransfromResource.mMemory
+        mObjectBufferResource.mBuffer,
+        mObjectBufferResource.mMemory
+    );
+
+    bufferSize = sizeof(CameraUniform);
+    VulkanUtil::createBuffer(
+        bufferSize,
+        vk::BufferUsageFlagBits::eUniformBuffer,
+        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+        mCameraBufferResource.mBuffer,
+        mCameraBufferResource.mMemory
     );
 }
 
@@ -109,13 +120,17 @@ void tiny::RenderResource::createDescriptorSetLayout()
     vk::DescriptorSetLayoutCreateInfo info;
 
     // mesh固定的uniform DescriptorSetLayout
-    vk::DescriptorSetLayoutBinding uniformBinding;
-    uniformBinding.binding = 0;
-    uniformBinding.descriptorCount = 1;
-    uniformBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
-    uniformBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-    info.bindingCount = 1;
-    info.pBindings = &uniformBinding;
+    std::array<vk::DescriptorSetLayoutBinding,2> uniformBinding;
+    uniformBinding[0].binding = 0;
+    uniformBinding[0].descriptorCount = 1;
+    uniformBinding[0].descriptorType = vk::DescriptorType::eUniformBuffer;
+    uniformBinding[0].stageFlags = vk::ShaderStageFlagBits::eVertex;
+    uniformBinding[1].binding = 1;
+    uniformBinding[1].descriptorCount = 1;
+    uniformBinding[1].descriptorType = vk::DescriptorType::eUniformBuffer;
+    uniformBinding[1].stageFlags = vk::ShaderStageFlagBits::eVertex;
+    info.bindingCount = 2;
+    info.pBindings = uniformBinding.data();
     mDescSetLayouts[DESCRIPTOR_TYPE_UNIFORM] = mVulkanRHI->mDevice.createDescriptorSetLayout(info);
 
     // 变动较多的 sample DescriptorSetLayout

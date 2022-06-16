@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\function\render\RenderCamera.cpp" />
     <ClCompile Include="source\function\render\renderResource\MeshResource.cpp" />
     <ClCompile Include="source\function\inputSystem\InputSystem.cpp" />
     <ClCompile Include="source\function\framework\assets\MeshAsset.cpp" />
@@ -43,6 +44,7 @@
     <ClCompile Include="source\function\framework\assets\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\function\render\RenderCamera.h" />
     <ClInclude Include="source\function\render\renderResource\MeshResource.h" />
     <ClInclude Include="source\function\inputSystem\InputSystem.h" />
     <ClInclude Include="source\function\framework\assets\MeshAsset.h" />

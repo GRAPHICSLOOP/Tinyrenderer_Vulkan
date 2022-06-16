@@ -282,19 +282,31 @@ void tiny::MainCameraPass::setupDescriptorSet()
     info.pSetLayouts = mDescSetLayouts.data();
     mDescriptorSets = mVulkanRHI->mDevice.allocateDescriptorSets(info);
 
-    vk::DescriptorBufferInfo bufferInfo;
-    bufferInfo.buffer = mRenderResource->mTransfromResource.mBuffer;
-    bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(tiny::TransfromUniform);
+    vk::DescriptorBufferInfo objectBufferInfo;
+    objectBufferInfo.buffer = mRenderResource->mObjectBufferResource.mBuffer;
+    objectBufferInfo.offset = 0;
+    objectBufferInfo.range = sizeof(tiny::ObjectUniform);
+
+    vk::DescriptorBufferInfo cameraBufferInfo;
+    cameraBufferInfo.buffer = mRenderResource->mCameraBufferResource.mBuffer;
+    cameraBufferInfo.offset = 0;
+    cameraBufferInfo.range = sizeof(tiny::CameraUniform);
 
     // 更新描述符
-    std::array<vk::WriteDescriptorSet, 1> writeSet;
+    std::array<vk::WriteDescriptorSet, 2> writeSet;
     writeSet[0].dstArrayElement = 0;
     writeSet[0].dstBinding = 0;
     writeSet[0].dstSet = mDescriptorSets[DESCRIPTOR_TYPE_UNIFORM];
     writeSet[0].descriptorType = vk::DescriptorType::eUniformBuffer;
     writeSet[0].descriptorCount = 1;
-    writeSet[0].pBufferInfo = &bufferInfo;
+    writeSet[0].pBufferInfo = &objectBufferInfo;
+
+    writeSet[1].dstArrayElement = 0;
+    writeSet[1].dstBinding = 1;
+    writeSet[1].dstSet = mDescriptorSets[DESCRIPTOR_TYPE_UNIFORM];
+    writeSet[1].descriptorType = vk::DescriptorType::eUniformBuffer;
+    writeSet[1].descriptorCount = 1;
+    writeSet[1].pBufferInfo = &cameraBufferInfo;
 
     mVulkanRHI->mDevice.updateDescriptorSets(writeSet, nullptr);
 }
@@ -323,17 +335,27 @@ void tiny::MainCameraPass::setupSwapchainFramebuffers()
     }
 }
 
+
 void tiny::MainCameraPass::TempUpdateUniformBuffer(float deltaTime)
 {
-    TransfromUniform ubo;
+    ObjectUniform ubo;
+    CameraUniform cmo;
     ubo.mModel = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
-    ubo.mView = glm::lookAtRH(glm::vec3(0.f,0.f,4.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
-    ubo.mProj = glm::perspectiveRH(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
-    ubo.mProj[1][1] *= -1;
+    cmo.mView = glm::lookAtRH(glm::vec3(0.f,0.f,4.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+    cmo.mProj = glm::perspectiveRH(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
+    cmo.mProj[1][1] *= -1;
+    cmo.mViewPorj = cmo.mProj * cmo.mView;
 
     vk::DeviceSize deviceSize = sizeof(ubo);
     void* data;
-    vkMapMemory(mVulkanRHI->mDevice,mRenderResource->mTransfromResource.mMemory, 0, deviceSize, 0, &data);
+    vkMapMemory(mVulkanRHI->mDevice,mRenderResource->mObjectBufferResource.mMemory, 0, deviceSize, 0, &data);
     memcpy(data, &ubo, deviceSize);
-    vkUnmapMemory(mVulkanRHI->mDevice, mRenderResource->mTransfromResource.mMemory);
+    vkUnmapMemory(mVulkanRHI->mDevice, mRenderResource->mObjectBufferResource.mMemory);
+    deviceSize = 0;
+    data = nullptr;
+
+    deviceSize = sizeof(cmo);
+    vkMapMemory(mVulkanRHI->mDevice, mRenderResource->mCameraBufferResource.mMemory, 0, deviceSize, 0, &data);
+    memcpy(data, &cmo, deviceSize);
+    vkUnmapMemory(mVulkanRHI->mDevice, mRenderResource->mCameraBufferResource.mMemory);
 }

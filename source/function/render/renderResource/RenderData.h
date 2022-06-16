@@ -50,4 +50,18 @@ namespace tiny
 			return des;
 		}
 	};
+
+	struct CameraUniform
+	{
+	public:
+		glm::mat4 mView;
+		glm::mat4 mProj;
+		glm::mat4 mViewPorj;
+	};
+
+	struct ObjectUniform
+	{
+	public:
+		glm::mat4 mModel;
+	};
 }
