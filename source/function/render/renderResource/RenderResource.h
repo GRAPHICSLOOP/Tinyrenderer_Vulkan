@@ -15,13 +15,6 @@ namespace tiny
 		std::weak_ptr<class TextureResource> mTextureResource;
 	};
 
-	struct BufferResource
-	{
-	public:
-		vk::Buffer mBuffer;
-		vk::DeviceMemory mMemory;
-	};
-
 	struct RenderResourceConfigParams
 	{
 	public:
@@ -38,13 +31,13 @@ namespace tiny
 		vk::DescriptorSetLayout getDescriptorSetLayout(DESCRIPTOR_TYPE type);
 
 	public:
-		BufferResource mObjectBufferResource;
-		BufferResource mCameraBufferResource;
+		ObjectBufferResource mObjectBufferResource;
+		CameraBufferResource mCameraBufferResource;
 		std::vector<ModelRenderResource> mModelRenderResource;
 		std::unordered_map<size_t,std::weak_ptr<TextureResource>> mGlobalTextureResources;
 
 	private:
-		void createUniformBuffer();
+		void createBufferResource();
 		void createDescriptorSetLayout();
 
 	private:

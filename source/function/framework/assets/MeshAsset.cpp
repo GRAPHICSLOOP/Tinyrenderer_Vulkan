@@ -53,7 +53,7 @@ void tiny::MeshAsset::processNode(aiNode* node, const aiScene* scene)
 void tiny::MeshAsset::processMesh(aiMesh* mesh, const aiScene* scene)
 {
 	MeshPart meshPart;
-	std::vector<Vertex> vertices;
+	std::vector<VertexBufferData> vertices;
 	std::vector<uint32_t> indices;
 	vertices.resize(mesh->mNumVertices);
 
@@ -62,7 +62,7 @@ void tiny::MeshAsset::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		for (uint32_t i = 0; i < mesh->mNumVertices; i++)
 		{
-			Vertex vertex;
+			VertexBufferData vertex;
 			vertex.mPosition.x = mesh->mVertices[i].x;
 			vertex.mPosition.y = mesh->mVertices[i].y;
 			vertex.mPosition.z = mesh->mVertices[i].z;
@@ -76,7 +76,7 @@ void tiny::MeshAsset::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		for (uint32_t i = 0; i < mesh->mNumVertices; i++)
 		{
-			Vertex vertex;
+			VertexBufferData vertex;
 			vertex.mPosition.x = mesh->mVertices[i].x;
 			vertex.mPosition.y = mesh->mVertices[i].y;
 			vertex.mPosition.z = mesh->mVertices[i].z;

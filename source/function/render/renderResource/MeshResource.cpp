@@ -1,7 +1,7 @@
 ﻿#include "MeshResource.h"
 #include "function/global/GlobalContext.h"
 
-tiny::MeshResource::MeshResource(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+tiny::MeshResource::MeshResource(const std::vector<VertexBufferData>& vertices, const std::vector<uint32_t>& indices)
 {
 	mVulkanRHI = gRuntimeGlobalContext.mRenderSystem->mVulkanRHI;
 	gRuntimeGlobalContext.mRenderSystem->mRenderResource->createVertexBuffer(mMeshBufferResource, vertices.data(), (uint32_t)vertices.size());

@@ -65,6 +65,9 @@ namespace tiny
 		std::vector<vk::DescriptorSet> mDescriptorSets;
 		Frame mFrame;
 
+		ObjectBufferData objectData;
+		CameraBufferData cameraData;
+
 	private:
 		void setupAttachments();
 		void setupRenderPass();

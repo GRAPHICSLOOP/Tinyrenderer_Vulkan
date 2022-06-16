@@ -20,7 +20,7 @@ namespace tiny
 	{
 
 	public:
-		MeshResource(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+		MeshResource(const std::vector<VertexBufferData>& vertices, const std::vector<uint32_t>& indices);
 		~MeshResource();
 
 	public:

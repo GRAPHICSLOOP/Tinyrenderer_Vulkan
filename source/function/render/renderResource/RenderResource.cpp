@@ -9,6 +9,9 @@ tiny::RenderResource::~RenderResource()
     {
         mVulkanRHI->mDevice.destroyDescriptorSetLayout(mDescSetLayouts[i]);
     }
+
+    vkUnmapMemory(mVulkanRHI->mDevice, mObjectBufferResource.mMemory);
+    vkUnmapMemory(mVulkanRHI->mDevice, mCameraBufferResource.mMemory);
     mVulkanRHI->mDevice.destroyBuffer(mObjectBufferResource.mBuffer);
 	mVulkanRHI->mDevice.freeMemory(mObjectBufferResource.mMemory);
     mVulkanRHI->mDevice.destroyBuffer(mCameraBufferResource.mBuffer);
@@ -18,14 +21,14 @@ tiny::RenderResource::~RenderResource()
 void tiny::RenderResource::initialize(const RenderResourceConfigParams& params)
 {
 	mVulkanRHI = params.mVulkanRHI;
-    createUniformBuffer();
+    createBufferResource();
     createDescriptorSetLayout();
 }
 
 void tiny::RenderResource::createVertexBuffer(MeshBufferResource& bufferResouce,const void* VerticesData, uint32_t count)
 {
     bufferResouce.mVertexCount = count;
-    size_t size = count * sizeof(Vertex);
+    size_t size = count * sizeof(VertexBufferData);
 
     vk::Buffer stagingBuffer;
     vk::DeviceMemory stagingBufferMemory;
@@ -94,9 +97,9 @@ vk::DescriptorSetLayout tiny::RenderResource::getDescriptorSetLayout(DESCRIPTOR_
     return mDescSetLayouts[type];
 }
 
-void tiny::RenderResource::createUniformBuffer()
+void tiny::RenderResource::createBufferResource()
 {
-    vk::DeviceSize bufferSize = sizeof(ObjectUniform);
+    vk::DeviceSize bufferSize = sizeof(ObjectBufferData);
     VulkanUtil::createBuffer(
         bufferSize,
         vk::BufferUsageFlagBits::eUniformBuffer,
@@ -105,7 +108,7 @@ void tiny::RenderResource::createUniformBuffer()
         mObjectBufferResource.mMemory
     );
 
-    bufferSize = sizeof(CameraUniform);
+    bufferSize = sizeof(CameraBufferData);
     VulkanUtil::createBuffer(
         bufferSize,
         vk::BufferUsageFlagBits::eUniformBuffer,
@@ -113,6 +116,10 @@ void tiny::RenderResource::createUniformBuffer()
         mCameraBufferResource.mBuffer,
         mCameraBufferResource.mMemory
     );
+
+    // 不立马解除映射 销毁RenderResource的时候才解除
+    vkMapMemory(mVulkanRHI->mDevice, mObjectBufferResource.mMemory, 0, sizeof(ObjectBufferData), 0, &mObjectBufferResource.mData);
+    vkMapMemory(mVulkanRHI->mDevice, mCameraBufferResource.mMemory, 0, sizeof(CameraBufferData), 0, &mCameraBufferResource.mData);
 }
 
 void tiny::RenderResource::createDescriptorSetLayout()
