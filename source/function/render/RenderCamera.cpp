@@ -21,7 +21,7 @@ void tiny::RenderCamera::move(glm::vec3 delta)
 
 void tiny::RenderCamera::rotate(glm::vec2 delta)
 {
-	if (mRotation.pitch + delta.y > 89.f || mRotation.pitch + delta.y < -89.f)
+	if (mRotation.pitch + delta.y > 90.f || mRotation.pitch + delta.y < -90.f)
 	{
 		delta.y = 0;
 	}
