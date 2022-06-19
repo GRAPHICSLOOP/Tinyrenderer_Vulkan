@@ -4,6 +4,10 @@
 
 tiny::RenderCamera::RenderCamera()
 {
+	mRotation.yaw = -180.f;
+	mRotation.pitch = 0.f;
+	mRotation.roll = 0.f;
+
 	mForwradVector = -Z;
 	mPosition = glm::vec3(0, 0, 4.f);
 }
@@ -17,18 +21,18 @@ void tiny::RenderCamera::move(glm::vec3 delta)
 
 void tiny::RenderCamera::rotate(glm::vec2 delta)
 {
-	if (mRotation.pitch > 89.f || mRotation.pitch < -89.f)
+	if (mRotation.pitch + delta.y > 89.f || mRotation.pitch + delta.y < -89.f)
 	{
-		delta.x = 0;
+		delta.y = 0;
 	}
 
 	mRotation.pitch += delta.y;
-	mRotation.yaw += delta.x;
+	mRotation.yaw -= delta.x;
 
 	glm::vec3 dir;
-	dir.x = glm::cos(glm::radians(mRotation.yaw)) * glm::cos(glm::radians(mRotation.pitch));
-	dir.y = glm::sin(glm::radians(mRotation.pitch));
-	dir.z = glm::sin(glm::radians(mRotation.yaw)) * glm::cos(glm::radians(mRotation.pitch));
+	dir.x = glm::cos(glm::radians(mRotation.yaw / 2.f)) * glm::cos(glm::radians(mRotation.pitch / 2.f));
+	dir.y = glm::sin(glm::radians(mRotation.pitch / 2.f));
+	dir.z = glm::sin(glm::radians(mRotation.yaw / 2.f)) * glm::cos(glm::radians(mRotation.pitch / 2.f));
 	mForwradVector = glm::normalize(dir);
 }
 

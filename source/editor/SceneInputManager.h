@@ -10,8 +10,8 @@ namespace tiny
 		CAMERA_BACK = 1 << 1,		// S
 		CAMERA_FORWARD = 1 << 2,	// W
 		CAMERA_RIGHT = 1 << 3,		// D
-		CAMERA_UP = 1 << 4,			// Q
-		CAMERA_DOWN = 1 << 5,		// E
+		CAMERA_UP = 1 << 4,			// E
+		CAMERA_DOWN = 1 << 5,		// Q
 	};
 
 	class SceneInputManager : public tiny::inputSystem
@@ -29,6 +29,9 @@ namespace tiny
 	private:
 		std::shared_ptr<tiny::RenderSystem> mRenderSystem;
 		uint32_t mEditorCommand;
+
+		bool mEditorMouseButtonRight;
+		glm::vec2 mLastMousePos;
 	};
 }
 

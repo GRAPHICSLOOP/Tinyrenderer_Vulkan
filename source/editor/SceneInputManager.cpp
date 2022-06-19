@@ -5,7 +5,10 @@
 void tiny::SceneInputManager::initialize()
 {
 	mRenderSystem = gRuntimeGlobalContext.mRenderSystem;
+	mEditorMouseButtonRight = false;
+
 	listenKeyInput();
+	listenMouseInput();
 }
 
 void tiny::SceneInputManager::tick(float deltaTime)
@@ -51,12 +54,34 @@ void tiny::SceneInputManager::onKey(int key, int scancode, int action, int mods)
 
 void tiny::SceneInputManager::onMouseButton(int button, int action, int mods)
 {
-
+	if (action == GLFW_PRESS)
+	{
+		if (button == GLFW_MOUSE_BUTTON_RIGHT)
+		{
+			mEditorMouseButtonRight = true;
+		}
+	} 
+	else if (action == GLFW_RELEASE)
+	{
+		if (button == GLFW_MOUSE_BUTTON_RIGHT)
+		{
+			mEditorMouseButtonRight = false;
+		}
+	}
 }
 
 void tiny::SceneInputManager::onCursorPos(float xpos, float ypos)
 {
+	glm::vec2 currentMousePos = glm::vec2(xpos, ypos);
+	float cameraRotateSpeed = 0.2f;
 
+	if (mEditorMouseButtonRight)
+	{
+		glm::vec2 delta = (mLastMousePos - currentMousePos) * cameraRotateSpeed;
+		mRenderSystem->mRenderCamera->rotate(delta);
+	}
+
+	mLastMousePos = currentMousePos;
 }
 
 void tiny::SceneInputManager::processKeyInput()
