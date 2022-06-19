@@ -11,8 +11,9 @@ namespace tiny
 	{
 	public:
 		void initialize();
-		void tick(float deltaTime);
+		void tick(float delta);
 
+		std::shared_ptr<Object> createObject();
 		void addObject(std::shared_ptr<Object> object);
 		void removeObject(std::shared_ptr<Object> object);
 		std::vector<std::shared_ptr<Object>> getObjects();

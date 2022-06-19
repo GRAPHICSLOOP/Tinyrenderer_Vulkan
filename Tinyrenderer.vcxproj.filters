@@ -127,6 +127,9 @@
     <ClCompile Include="source\editor\SceneInputManager.cpp">
       <Filter>editor</Filter>
     </ClCompile>
+    <ClCompile Include="source\function\framework\object\ObjectIDAllocator.cpp">
+      <Filter>engine\function\framework\object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\function\global\GlobalContext.h">
@@ -204,5 +207,9 @@
     <ClInclude Include="source\editor\SceneInputManager.h">
       <Filter>editor</Filter>
     </ClInclude>
+    <ClInclude Include="source\function\framework\object\ObjectIDAllocator.h">
+      <Filter>engine\function\framework\object</Filter>
+    </ClInclude>
+    <ClInclude Include="source\core\math\MathCommon.h" />
   </ItemGroup>
 </Project>

@@ -3,13 +3,25 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "MeshAsset.h"
-#include "function/global/GlobalContext.h"
 
 void tiny::MeshAsset::initialize(std::string name, std::string path)
 {
 	mName = name;
 	mSourcePath = path;
     loadModel();
+}
+
+std::vector<tiny::ModelRenderResource> tiny::MeshAsset::getMeshResource()
+{
+	std::vector<tiny::ModelRenderResource> modelRenderResource;
+	for (const auto& mesh : mMeshParts)
+	{
+		ModelRenderResource resource;
+		resource.mMeshResource = mesh.mMeshResource;
+		resource.mTextureResource = mesh.mTexture2D->getTextureResource();
+		modelRenderResource.push_back(resource);
+	}
+	return modelRenderResource;
 }
 
 void tiny::MeshAsset::loadModel()
@@ -25,13 +37,6 @@ void tiny::MeshAsset::loadModel()
 
 	mDirectory = mSourcePath.substr(0, mSourcePath.find_last_of('/'));
 	processNode(scene->mRootNode, scene);
-	for (const auto& mesh : mMeshParts)
-	{
-		ModelRenderResource resource;
-		resource.mMeshResource = mesh.mMeshResource;
-		resource.mTextureResource = mesh.mTexture2D->getTextureResource();
-		gRuntimeGlobalContext.mRenderSystem->mRenderResource->mModelRenderResource.push_back(resource);
-	}
 }
 
 void tiny::MeshAsset::processNode(aiNode* node, const aiScene* scene)

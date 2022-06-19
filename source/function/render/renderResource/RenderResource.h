@@ -35,7 +35,8 @@ namespace tiny
 	public:
 		ObjectBufferResource mObjectBufferResource;
 		CameraBufferResource mCameraBufferResource;
-		std::vector<ModelRenderResource> mModelRenderResource;
+		std::unordered_map<size_t,ObjectBufferData> mObjectBufferDatas;
+		std::unordered_map<size_t,std::vector<ModelRenderResource>> mModelRenderResource;
 		std::unordered_map<size_t,std::weak_ptr<TextureResource>> mGlobalTextureResources;
 
 	private:

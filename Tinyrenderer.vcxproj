@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\function\framework\object\ObjectIDAllocator.cpp" />
     <ClCompile Include="source\editor\SceneInputManager.cpp" />
     <ClCompile Include="source\function\render\RenderCamera.cpp" />
     <ClCompile Include="source\function\render\renderResource\MeshResource.cpp" />
@@ -45,6 +46,8 @@
     <ClCompile Include="source\function\framework\assets\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\core\math\MathCommon.h" />
+    <ClInclude Include="source\function\framework\object\ObjectIDAllocator.h" />
     <ClInclude Include="source\editor\SceneInputManager.h" />
     <ClInclude Include="source\function\render\RenderCamera.h" />
     <ClInclude Include="source\function\render\renderResource\MeshResource.h" />
@@ -180,6 +183,7 @@
       <AdditionalLibraryDirectories>F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\assimp\lib;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\glfw\lib;F:\Jacson\Documents\Learning\Tinyrenderer\3rdparty\VulkanSDK\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>assimp-vc142-mt.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <IgnoreSpecificDefaultLibraries>MSVCRT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

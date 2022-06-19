@@ -15,13 +15,14 @@ namespace tiny
 	{
 	public:
 		void initialize(std::string name, std::string path);
-		void loadModel();
+		std::vector<tiny::ModelRenderResource> getMeshResource();
 
 	public:
 		std::string mName;
 		std::string mSourcePath;
 
 	private:
+		void loadModel();
 		void processNode(struct aiNode* node,const struct aiScene* scene);
 		void processMesh(struct aiMesh* mesh, const struct aiScene* scene);
 		std::shared_ptr<tiny::Texture2D> loadMaterialTextures(struct aiMaterial* mat,enum aiTextureType type, std::string typeName);

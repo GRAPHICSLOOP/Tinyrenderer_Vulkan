@@ -27,6 +27,7 @@ void tiny::TinyEngine::run()
 		windowSystem->pollEvents();
 		logicalTick(deltaTime);
 		rendererTick(deltaTime);
+		clear();
 	}
 
 	gRuntimeGlobalContext.mRenderSystem->mVulkanRHI->mDevice.waitIdle();
@@ -43,6 +44,8 @@ void tiny::TinyEngine::initialize()
 
 void tiny::TinyEngine::clear()
 {
+	// 清理相关临时数据
+
 }
 
 void tiny::TinyEngine::logicalTick(float deltaTime)

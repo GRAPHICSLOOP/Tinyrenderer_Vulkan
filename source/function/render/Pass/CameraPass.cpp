@@ -59,13 +59,22 @@ void tiny::MainCameraPass::drawPass()
         mVulkanRHI->mCommandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, mPipeline);
         vk::DeviceSize offset = 0;
         mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mPipelineLayout, 0, 1, mDescriptorSets.data(), 0, nullptr);
-        for (const auto& resource : mRenderResource->mModelRenderResource)
+        for (const auto& iter : mRenderResource->mModelRenderResource)
         {
-            mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                mPipelineLayout, 1, 1, &resource.mTextureResource.lock()->mTextureBufferResource.mDescriptorSet, 0, nullptr);
-            mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mMeshResource.lock()->mMeshBufferResource.mVertexBuffer, &offset);
-            mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mMeshResource.lock()->mMeshBufferResource.mIndexBuffer, offset, vk::IndexType::eUint32);
-            mVulkanRHI->mCommandBuffer.drawIndexed(resource.mMeshResource.lock()->mMeshBufferResource.mIndexCount, 1, 0, 0, 0);
+            // 更新模型位置
+            const ObjectBufferData& objectData = mRenderResource->mObjectBufferDatas[iter.first];
+            (*(ObjectBufferData*)mRenderResource->mObjectBufferResource.mData).mModel = objectData.mModel;
+
+            // 绑定相关数据和绘制
+            for (const auto& resource : iter.second)
+            {
+                mVulkanRHI->mCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                    mPipelineLayout, 1, 1, &resource.mTextureResource.lock()->mTextureBufferResource.mDescriptorSet, 0, nullptr);
+                mVulkanRHI->mCommandBuffer.bindVertexBuffers(0, 1, &resource.mMeshResource.lock()->mMeshBufferResource.mVertexBuffer, &offset);
+                mVulkanRHI->mCommandBuffer.bindIndexBuffer(resource.mMeshResource.lock()->mMeshBufferResource.mIndexBuffer, offset, vk::IndexType::eUint32);
+                mVulkanRHI->mCommandBuffer.drawIndexed(resource.mMeshResource.lock()->mMeshBufferResource.mIndexCount, 1, 0, 0, 0);
+            }
+
         }
     mVulkanRHI->mCommandBuffer.endRenderPass();
 }

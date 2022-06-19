@@ -1,16 +1,11 @@
 ﻿#pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "core/math/MathCommon.h"
 
 namespace tiny
 {
-	struct Rotation
-	{
-	public:
-		float yaw;
-		float roll;
-		float pitch;
-	};
+
 
 	class RenderCamera
 	{
