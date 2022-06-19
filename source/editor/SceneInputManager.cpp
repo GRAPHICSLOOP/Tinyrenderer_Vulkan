@@ -59,6 +59,7 @@ void tiny::SceneInputManager::onMouseButton(int button, int action, int mods)
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
 		{
 			mEditorMouseButtonRight = true;
+			setMouseCursorMode(false);
 		}
 	} 
 	else if (action == GLFW_RELEASE)
@@ -66,6 +67,7 @@ void tiny::SceneInputManager::onMouseButton(int button, int action, int mods)
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
 		{
 			mEditorMouseButtonRight = false;
+			setMouseCursorMode(true);
 		}
 	}
 }

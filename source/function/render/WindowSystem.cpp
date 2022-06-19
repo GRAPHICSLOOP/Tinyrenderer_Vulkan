@@ -33,6 +33,18 @@ bool tiny::WindowSystem::shouldClose() const
 	return glfwWindowShouldClose(mWindow);
 }
 
+void tiny::WindowSystem::setMouseCursorMode(bool enable)
+{
+	if (enable)
+	{
+		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+	else
+	{
+		glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+}
+
 GLFWwindow* tiny::WindowSystem::getWindow() const
 {
 	return mWindow;

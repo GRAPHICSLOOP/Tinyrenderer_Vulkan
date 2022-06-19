@@ -24,6 +24,7 @@ namespace tiny
 		void initialize();
 		void pollEvents() const;
 		bool shouldClose() const;
+		void setMouseCursorMode(bool enable);
 		GLFWwindow* getWindow() const;
 
 		void registerOnKeyFunc(onKeyFunc func) { mOnKeyFunc.push_back(func); }

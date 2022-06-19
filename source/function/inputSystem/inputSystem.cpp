@@ -28,3 +28,9 @@ void tiny::inputSystem::listenMouseInput()
 		std::placeholders::_1,
 		std::placeholders::_2));
 }
+
+void tiny::inputSystem::setMouseCursorMode(bool enable)
+{
+	std::shared_ptr<WindowSystem> windowSystem = gRuntimeGlobalContext.mWindowSystem;
+	windowSystem->setMouseCursorMode(enable);
+}

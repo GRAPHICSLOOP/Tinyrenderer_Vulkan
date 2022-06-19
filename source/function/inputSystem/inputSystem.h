@@ -6,6 +6,7 @@ namespace tiny
 	public:
 		void listenKeyInput();
 		void listenMouseInput();
+		void setMouseCursorMode(bool enable);
 
 		// 子类可重写
 		virtual void onKey(int key, int scancode, int action, int mods)
@@ -24,6 +25,7 @@ namespace tiny
 		{
 
 		}
+
 	};
 }
 
