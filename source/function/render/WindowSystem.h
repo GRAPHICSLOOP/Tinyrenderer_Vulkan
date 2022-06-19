@@ -14,6 +14,8 @@ namespace tiny
 	};
 
 	typedef std::function<void(int, int, int, int)> onKeyFunc;
+	typedef std::function<void(int, int, int)> onMouseButtonFunc;
+	typedef std::function<void(float, float)> onCursorPosFunc;
 
 	class WindowSystem
 	{
@@ -24,19 +26,33 @@ namespace tiny
 		bool shouldClose() const;
 		GLFWwindow* getWindow() const;
 
-	public:
 		void registerOnKeyFunc(onKeyFunc func) { mOnKeyFunc.push_back(func); }
+		void registerOnMouseButtonFunc(onMouseButtonFunc func) { mOnMouseButtonFunc.push_back(func); }
+		void registerOnCursorPosFunc(onCursorPosFunc func) { mOnCursorPosFunc.push_back(func); }
 
-	public:
 		static void keyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			WindowSystem* app = (WindowSystem*)glfwGetWindowUserPointer(window);
 			for (const auto& fun : app->mOnKeyFunc)
 				fun(key, scancode, action, mods);
 		}
+		static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+		{
+			WindowSystem* app = (WindowSystem*)glfwGetWindowUserPointer(window);
+			for (const auto& fun : app->mOnMouseButtonFunc)
+				fun(button, action, mods);
+		}
+		static void cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+		{
+			WindowSystem* app = (WindowSystem*)glfwGetWindowUserPointer(window);
+			for (const auto& fun : app->mOnCursorPosFunc)
+				fun((float)xpos, (float)ypos);
+		}
 
 	private:
 		std::vector<onKeyFunc> mOnKeyFunc;
+		std::vector<onMouseButtonFunc> mOnMouseButtonFunc;
+		std::vector<onCursorPosFunc> mOnCursorPosFunc;
 
 	private:
 		GLFWwindow* mWindow;

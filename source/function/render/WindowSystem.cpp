@@ -19,7 +19,8 @@ void tiny::WindowSystem::initialize()
 	// 设置回调
 	glfwSetWindowUserPointer(mWindow,this);
 	glfwSetKeyCallback(mWindow, keyCallBack);
-
+	glfwSetMouseButtonCallback(mWindow,mouseButtonCallback);
+	glfwSetCursorPosCallback(mWindow,cursorPosCallback);
 }
 
 void tiny::WindowSystem::pollEvents() const

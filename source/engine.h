@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "core/base/macro.h"
 #include "function/framework/level/Level.h"
+#include "editor/SceneInputManager.h"
 
 namespace tiny 
 {
@@ -29,6 +30,7 @@ namespace tiny
 
 	private:
 		std::shared_ptr<Level> mLevel;
+		std::shared_ptr<SceneInputManager> mScenceManager;
 	};
 }
 

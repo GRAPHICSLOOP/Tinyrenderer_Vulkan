@@ -18,6 +18,8 @@ void tiny::RenderSystem::initialize()
 	PipelineParams.mRenderResource = mRenderResource;
 	mRenderPipeline = std::make_shared<RenderPipeline>();
 	mRenderPipeline->initialize(PipelineParams);
+
+	mRenderCamera = std::make_shared<RenderCamera>();
 }
 
 void tiny::RenderSystem::tick(float deltaTime)
@@ -25,6 +27,8 @@ void tiny::RenderSystem::tick(float deltaTime)
 	// 等待上一帧渲染
 	mVulkanRHI->mDevice.waitForFences(1, &mVulkanRHI->mFence, VK_TRUE, UINT64_MAX);
 	mVulkanRHI->mDevice.resetFences(1, &mVulkanRHI->mFence);
+
+	mRenderResource->updatePerFrameBuffer(mRenderCamera);
 
 	mVulkanRHI->prepareBeforePass();
 	

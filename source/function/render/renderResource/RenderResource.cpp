@@ -91,6 +91,16 @@ void tiny::RenderResource::createIndexBuffer(MeshBufferResource& bufferResouce,c
     mVulkanRHI->mDevice.freeMemory(stagingBufferMemory);
 }
 
+void tiny::RenderResource::updatePerFrameBuffer(std::shared_ptr<RenderCamera> camera)
+{
+    (*(ObjectBufferData*)mObjectBufferResource.mData).mModel = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
+    //(*(CameraBufferData*)mCameraBufferResource.mData).mView = glm::lookAtRH(glm::vec3(0.f,0.f,4.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+    (*(CameraBufferData*)mCameraBufferResource.mData).mView = camera->getViewMatrix();
+    (*(CameraBufferData*)mCameraBufferResource.mData).mProj = glm::perspectiveRH(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
+    (*(CameraBufferData*)mCameraBufferResource.mData).mProj[1][1] *= -1;
+    (*(CameraBufferData*)mCameraBufferResource.mData).mViewPorj = (*(CameraBufferData*)mCameraBufferResource.mData).mProj * (*(CameraBufferData*)mCameraBufferResource.mData).mView;
+}
+
 vk::DescriptorSetLayout tiny::RenderResource::getDescriptorSetLayout(DESCRIPTOR_TYPE type)
 {
     CHECK_NULL(mDescSetLayouts[type]);

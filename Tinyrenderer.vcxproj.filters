@@ -1,189 +1,208 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="function">
-      <UniqueIdentifier>{6678e389-c9e9-44cf-9586-694a1286a165}</UniqueIdentifier>
+    <Filter Include="engine">
+      <UniqueIdentifier>{dce44b78-a1e4-496c-80ef-ae8d01e024b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\global">
-      <UniqueIdentifier>{4e7fd6f9-ad90-463d-a684-d332f2c5e161}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="function\render">
-      <UniqueIdentifier>{b48fdeb6-56ca-49e4-aa57-781309351416}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="core">
+    <Filter Include="engine\core">
       <UniqueIdentifier>{a06962de-bcc2-45fb-b821-89f922b53f50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\log">
+    <Filter Include="engine\core\log">
       <UniqueIdentifier>{780849c6-676c-4591-b48f-50d3af78e1d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\base">
+    <Filter Include="engine\core\base">
       <UniqueIdentifier>{94997c8b-0046-45ae-abed-9bcb9780ffb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\framework">
-      <UniqueIdentifier>{1ac91ade-9e83-46ee-b083-626cc3ef9371}</UniqueIdentifier>
+    <Filter Include="engine\function">
+      <UniqueIdentifier>{6678e389-c9e9-44cf-9586-694a1286a165}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\framework\component">
-      <UniqueIdentifier>{1fee749d-97cb-418f-ae3d-45eac2872953}</UniqueIdentifier>
+    <Filter Include="engine\function\global">
+      <UniqueIdentifier>{4e7fd6f9-ad90-463d-a684-d332f2c5e161}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\framework\object">
-      <UniqueIdentifier>{6ac6bb13-3f96-4948-af5f-86e401142294}</UniqueIdentifier>
+    <Filter Include="engine\function\render">
+      <UniqueIdentifier>{b48fdeb6-56ca-49e4-aa57-781309351416}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\framework\level">
-      <UniqueIdentifier>{94c67782-1c4c-4f72-b06f-0fe1d89becc2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="function\inputSystem">
-      <UniqueIdentifier>{6a6ed742-5fe8-4c1a-b770-c996c08af1e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="function\render\pass">
+    <Filter Include="engine\function\render\pass">
       <UniqueIdentifier>{694f4aea-81bf-44a7-abdf-f38fbb8f88b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\render\vulkan">
+    <Filter Include="engine\function\render\vulkan">
       <UniqueIdentifier>{147c9f5d-f623-48a9-b568-adda4e0b7f3b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\render\renderResource">
+    <Filter Include="engine\function\render\renderResource">
       <UniqueIdentifier>{3be3b94d-3efd-41d8-a857-b6fda41e93a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="function\framework\asset">
+    <Filter Include="engine\function\framework">
+      <UniqueIdentifier>{1ac91ade-9e83-46ee-b083-626cc3ef9371}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\function\framework\component">
+      <UniqueIdentifier>{1fee749d-97cb-418f-ae3d-45eac2872953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\function\framework\object">
+      <UniqueIdentifier>{6ac6bb13-3f96-4948-af5f-86e401142294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\function\framework\level">
+      <UniqueIdentifier>{94c67782-1c4c-4f72-b06f-0fe1d89becc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\function\framework\asset">
       <UniqueIdentifier>{108fe1e1-7fed-444e-82b6-ce870e195655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\function\inputSystem">
+      <UniqueIdentifier>{6a6ed742-5fe8-4c1a-b770-c996c08af1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\core\math">
+      <UniqueIdentifier>{9f9b2dec-786b-4cbc-9962-0187e71905da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="editor">
+      <UniqueIdentifier>{95121704-32c0-44b2-8e22-919ab763c0ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\function\global\GlobalContext.cpp">
-      <Filter>function\global</Filter>
+      <Filter>engine\function\global</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\RenderSystem.cpp">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\WindowSystem.cpp">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
     </ClCompile>
     <ClCompile Include="source\core\log\LogSystem.cpp">
-      <Filter>core\log</Filter>
+      <Filter>engine\core\log</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\vulkan\VulkanUtil.cpp">
-      <Filter>function\render\vulkan</Filter>
+      <Filter>engine\function\render\vulkan</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\vulkan\VulkanRHI.cpp">
-      <Filter>function\render\vulkan</Filter>
+      <Filter>engine\function\render\vulkan</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\RenderPipeline.cpp">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\pass\CameraPass.cpp">
-      <Filter>function\render\pass</Filter>
+      <Filter>engine\function\render\pass</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\component\Component.cpp">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\component\MeshComponent.cpp">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\component\NodeComponent.cpp">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\component\TransformComponent.cpp">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\assets\MeshAsset.cpp">
-      <Filter>function\framework\asset</Filter>
+      <Filter>engine\function\framework\asset</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\object\Object.cpp">
-      <Filter>function\framework\object</Filter>
+      <Filter>engine\function\framework\object</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\level\Level.cpp">
-      <Filter>function\framework\level</Filter>
+      <Filter>engine\function\framework\level</Filter>
     </ClCompile>
     <ClCompile Include="source\function\inputSystem\InputSystem.cpp">
-      <Filter>function\inputSystem</Filter>
+      <Filter>engine\function\inputSystem</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\renderResource\MeshResource.cpp">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\renderResource\RenderResource.cpp">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\renderResource\TextureResource.cpp">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClCompile>
     <ClCompile Include="source\function\framework\assets\Texture2D.cpp">
-      <Filter>function\framework\asset</Filter>
+      <Filter>engine\function\framework\asset</Filter>
     </ClCompile>
     <ClCompile Include="source\function\render\RenderCamera.cpp">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\editor\SceneInputManager.cpp">
+      <Filter>editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\function\global\GlobalContext.h">
-      <Filter>function\global</Filter>
+      <Filter>engine\function\global</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\WindowSystem.h">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\RenderSystem.h">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
     </ClInclude>
     <ClInclude Include="source\core\log\LogSystem.h">
-      <Filter>core\log</Filter>
+      <Filter>engine\core\log</Filter>
     </ClInclude>
     <ClInclude Include="source\core\base\macro.h">
-      <Filter>core\base</Filter>
+      <Filter>engine\core\base</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\vulkan\VulkanUtil.h">
-      <Filter>function\render\vulkan</Filter>
+      <Filter>engine\function\render\vulkan</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\vulkan\VulkanRHI.h">
-      <Filter>function\render\vulkan</Filter>
+      <Filter>engine\function\render\vulkan</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\RenderPipeline.h">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\pass\CameraPass.h">
-      <Filter>function\render\pass</Filter>
+      <Filter>engine\function\render\pass</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\component\Component.h">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\component\MeshComponent.h">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\component\NodeComponent.h">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\component\TransformComponent.h">
-      <Filter>function\framework\component</Filter>
+      <Filter>engine\function\framework\component</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\assets\MeshAsset.h">
-      <Filter>function\framework\asset</Filter>
+      <Filter>engine\function\framework\asset</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\object\Object.h">
-      <Filter>function\framework\object</Filter>
+      <Filter>engine\function\framework\object</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\level\Level.h">
-      <Filter>function\framework\level</Filter>
+      <Filter>engine\function\framework\level</Filter>
     </ClInclude>
     <ClInclude Include="source\function\inputSystem\InputSystem.h">
-      <Filter>function\inputSystem</Filter>
+      <Filter>engine\function\inputSystem</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\renderResource\MeshResource.h">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\renderResource\RenderResource.h">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\renderResource\TextureResource.h">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClInclude>
     <ClInclude Include="source\function\framework\assets\Texture2D.h">
-      <Filter>function\framework\asset</Filter>
+      <Filter>engine\function\framework\asset</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\renderResource\RenderData.h">
-      <Filter>function\render\renderResource</Filter>
+      <Filter>engine\function\render\renderResource</Filter>
     </ClInclude>
     <ClInclude Include="source\function\render\RenderCamera.h">
-      <Filter>function\render</Filter>
+      <Filter>engine\function\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\editor\SceneInputManager.h">
+      <Filter>editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

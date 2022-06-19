@@ -1,7 +1,7 @@
 ﻿#include "CameraPass.h"
 #include "function/render/vulkan/VulkanUtil.h"
 #include "core/base/macro.h"
-#include <glm/gtc/matrix_transform.hpp>
+
 
 tiny::MainCameraPass::~MainCameraPass()
 {
@@ -337,16 +337,16 @@ void tiny::MainCameraPass::setupSwapchainFramebuffers()
 
 void tiny::MainCameraPass::TempUpdateUniformBuffer(float deltaTime)
 {
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float ddeltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    //static auto startTime = std::chrono::high_resolution_clock::now();
+    //auto currentTime = std::chrono::high_resolution_clock::now();
+    //float ddeltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-    *(ObjectBufferData*)mRenderResource->mObjectBufferResource.mData = objectData;
-    *(CameraBufferData*)mRenderResource->mCameraBufferResource.mData = cameraData;
+    //*(ObjectBufferData*)mRenderResource->mObjectBufferResource.mData = objectData;
+    //*(CameraBufferData*)mRenderResource->mCameraBufferResource.mData = cameraData;
 
-    objectData.mModel = glm::scale(glm::mat4(1.f), glm::vec3(0.1f)) * glm::rotate(glm::mat4(1.f), ddeltaTime * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
-    cameraData.mView = glm::lookAtRH(glm::vec3(0.f,0.f,4.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
-    cameraData.mProj = glm::perspectiveRH(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
-    cameraData.mProj[1][1] *= -1;
-    cameraData.mViewPorj = cameraData.mProj * cameraData.mView;
+    //objectData.mModel = glm::scale(glm::mat4(1.f), glm::vec3(0.1f)) * glm::rotate(glm::mat4(1.f), ddeltaTime * glm::radians(90.f), glm::vec3(0.f, 0.f, 1.f));
+    //cameraData.mView = glm::lookAtRH(glm::vec3(0.f,0.f,4.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+    //cameraData.mProj = glm::perspectiveRH(glm::radians(45.f), mVulkanRHI->mSwapchainSupportDetails.mExtent2D.width / (float)mVulkanRHI->mSwapchainSupportDetails.mExtent2D.height, 0.1f, 10.f);
+    //cameraData.mProj[1][1] *= -1;
+    //cameraData.mViewPorj = cameraData.mProj * cameraData.mView;
 }

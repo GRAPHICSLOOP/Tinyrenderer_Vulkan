@@ -37,6 +37,8 @@ void tiny::TinyEngine::initialize()
 {
 	mLevel = std::make_shared<Level>();
 	mLevel->initialize();
+	mScenceManager = std::make_shared<SceneInputManager>();
+	mScenceManager->initialize();
 }
 
 void tiny::TinyEngine::clear()
@@ -46,6 +48,7 @@ void tiny::TinyEngine::clear()
 void tiny::TinyEngine::logicalTick(float deltaTime)
 {
 	mLevel->tick(deltaTime);
+	mScenceManager->tick(deltaTime);
 }
 
 void tiny::TinyEngine::rendererTick(float deltaTime)

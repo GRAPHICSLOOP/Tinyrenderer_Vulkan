@@ -4,6 +4,7 @@
 #include "TextureResource.h"
 #include "MeshResource.h"
 #include "RenderData.h"
+#include "function/render/RenderCamera.h"
 
 
 namespace tiny
@@ -28,6 +29,7 @@ namespace tiny
 		void initialize(const RenderResourceConfigParams& params);
 		void createVertexBuffer(struct MeshBufferResource& bufferResouce, const void* VerticesData, uint32_t count);
 		void createIndexBuffer(struct MeshBufferResource& bufferResouce, const void* indicesData, uint32_t count);
+		void updatePerFrameBuffer(std::shared_ptr<RenderCamera> camera);
 		vk::DescriptorSetLayout getDescriptorSetLayout(DESCRIPTOR_TYPE type);
 
 	public:
